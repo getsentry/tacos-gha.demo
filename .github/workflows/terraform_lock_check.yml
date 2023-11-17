@@ -1,0 +1,56 @@
+name: Terraform Lock Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lock-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Check for lock
+        id: lock_check
+        run: |
+          # Placeholder for script to check terraform lock
+          # For now it is a 50/50 chance
+          if [ $((RANDOM % 2)) -eq 0 ]; then
+            echo "lock_obtained=true" >> $GITHUB_OUTPUT
+          else
+            echo "lock_obtained=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Comment on PR whether lock is obtained
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const lockObtained = "${{ steps.lock_check.outputs.lock_obtained }}"
+            if (lockObtained == 'false') {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '❌🔒 Unable to obtain lock'
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '✅🔒 Obtained lock'
+              })
+            }
+        
+      - name: Fail if lock is not obtained
+        if: steps.lock_check.outputs.lock_obtained == 'false'
+        run: exit 1

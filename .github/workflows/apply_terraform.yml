@@ -1,0 +1,78 @@
+name: Terraform Apply on Command
+
+on:
+  issue_comment:
+    types: [created]
+  
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    if: github.event.issue.pull_request != null && contains(github.event.comment.body, '/terraform apply') && github.event.comment.user.type != 'Bot'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/merge
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      
+
+      - name: Check if the PR has lock
+        id: check_lock
+        run: |
+          # Placeholder for script to check terraform lock
+          # For now it is a 50/50 chance
+          if [ $((RANDOM % 2)) -eq 0 ]; then
+            echo "lock_obtained=true" >> $GITHUB_OUTPUT
+          else
+            echo "lock_obtained=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Terraform Apply
+        id: apply
+        if: steps.check_lock.outputs.lock_obtained == 'true'
+        run: |
+          echo "Applying Terraform"
+          # Placeholder for Terraform Apply command
+          # terraform apply -auto-approve
+          if [ $((RANDOM % 2)) -eq 0 ]; then
+            echo "apply_success=true" >> $GITHUB_OUTPUT
+          else
+            echo "apply_success=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const lockObtained = "${{ steps.check_lock.outputs.lock_obtained }}"
+            if (lockObtained == 'false') {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '❌ Terraform lock not obtained. Please try again later.'
+              })
+            } else {
+              const applySuccess = "${{ steps.apply.outputs.apply_success }}"
+              if (applySuccess == 'true') {
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: '✅ Terraform apply successful'
+                })
+              } else {
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: '❌ Terraform apply failed'
+                })
+              }
+            }
