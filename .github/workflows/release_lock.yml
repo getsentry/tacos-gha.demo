@@ -10,7 +10,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    if: ${{ github.event.label.name == ':taco:unlock' }}
+    if: ${{ github.event.label.name == ':taco::unlock' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
