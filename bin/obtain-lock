@@ -1,0 +1,18 @@
+#!/bin/bash
+# Placeholder for script to obtain terraform lock
+# For now it is a 50/50 chance
+# TODO: actually lock the terraform statefile
+set -euo pipefail
+
+# some things that may work:
+#  1. timeout -s SIGKILL 2 terraform plan --lock=true --var sleep=9999
+#  2. https://github.com/minamijoyo/tflock
+
+
+set -x
+if [ $((RANDOM % 2)) -eq 0 ]; then
+  echo "lock_obtained=true"
+else
+  echo "lock_obtained=false"
+  exit 1
+fi
