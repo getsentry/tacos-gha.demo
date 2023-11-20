@@ -1,8 +1,8 @@
-module.exports = ({ github, lockObtained }) => {
-  comment(github, JSON.parse(lockObtained));
+module.exports = ({ github, context, lockObtained }) => {
+  comment(github, context, JSON.parse(lockObtained));
 };
 
-function comment(github, lockObtained) {
+function comment(github, context, lockObtained) {
   if (lockObtained) {
     github.rest.issues.createComment({
       issue_number: context.issue.number,

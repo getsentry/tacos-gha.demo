@@ -28,4 +28,4 @@ jobs:
           script: |
             const lockObtained = ${{ steps.lock_check.outputs.lock_obtained }}
             const script = require('./src/lock-acquisition-comment.js')
-            console.log(script({github, lockObtained}))
+            console.log(script({github, context, lockObtained}))
