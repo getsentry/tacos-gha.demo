@@ -26,6 +26,6 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            console.log(${{ steps }})
+            console.log(${{ steps.lock_check }})
             const script = require('./src/lock-acquisition-comment.js')
             console.log(script({github, lockObtained}))
