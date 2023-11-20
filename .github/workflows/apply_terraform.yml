@@ -32,6 +32,9 @@ jobs:
         id: lock_check
         run: ./bin/obtain-lock
 
+      - name: Set execute permissions for tf-apply
+        run: chmod +x ./bin/tf-apply
+
       - name: Terraform Apply
         id: apply
         run: ./bin/tf-apply
