@@ -28,6 +28,7 @@ jobs:
         id: lock_check
         run: ./bin/obtain-lock
 
+      # No need to write a comment on the PR since the user can see the output of the action
       - name: Terraform Apply
         id: apply
         run: ./bin/tf-apply
