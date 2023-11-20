@@ -1,8 +1,5 @@
-module.exports = ({ github, context }) => {
-  const lockObtained = JSON.parse(
-    context.steps.lock_check.outputs.lock_obtained
-  );
-  comment(lockObtained, github);
+module.exports = ({ github, lockObtained }) => {
+  comment(github, JSON.parse(lockObtained));
 };
 
 function comment(github, lockObtained) {
