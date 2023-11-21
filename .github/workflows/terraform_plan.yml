@@ -22,9 +22,11 @@ jobs:
 
       - name: Plan
         uses: gruntwork-io/terragrunt-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: "run-all plan -out plan"
-          tg_comment: true
+          tg_comment: 1
