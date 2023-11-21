@@ -1,4 +1,4 @@
-name: Terraform Apply on Command
+name: Terraform Apply
 
 on:
   pull_request:
@@ -7,17 +7,13 @@ on:
     types: [closed]
 
 jobs:
-  apply:
+  terraform_apply:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
     if: ${{ github.event.label.name == ':taco::apply' }}
-      
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Checkout our scripts
         uses: actions/checkout@v3
 
@@ -25,14 +21,12 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Obtain the lock
-        id: lock_check
         run: ./bin/obtain-lock
 
       # No need to write a comment on the PR since the user can see the output of the action
       - name: Terraform Apply
-        id: apply
         run: ./bin/tf-apply
-      
+
       - name: Reset label
         uses: actions/github-script@v7
         if: always()

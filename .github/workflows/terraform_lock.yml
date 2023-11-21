@@ -1,11 +1,11 @@
-name: Terraform Obtain Lock
+name: Terraform Lock
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  terraform_obtain_lock:
+  terraform_lock:
     runs-on: ubuntu-latest
     permissions:
       contents: read

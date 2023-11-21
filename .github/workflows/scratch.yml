@@ -1,17 +1,24 @@
-name: Terraform Plan
+name: Scratch
 
 on:
   workflow_dispatch:
     inputs:
-      working_dir:
-        default: "./terraform/env"
+      working_dir: { default: "." }
 
       # NOTE: Please keep these in sync with ../../.terra*-version files.
       tf_version: { default: "1.6.4" }
       tg_version: { default: "0.53.5" }
 
+  schedule:
+    - cron: "0 0 * * *"
+
   pull_request:
-    types: [opened, synchronize, reopened]
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - closed
 
 env:
   working_dir: "ENV:./terraform/env"
@@ -19,7 +26,7 @@ env:
   tg_version: "ENV:0.53.5"
 
 jobs:
-  plan:
+  scratch:
     runs-on: ubuntu-latest
     permissions:
       contents: read

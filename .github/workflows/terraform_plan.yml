@@ -8,10 +8,10 @@ env:
   # NOTE: please keep these in sync with ../../.terra*-version
   tf_version: "1.6.4"
   tg_version: "0.53.5"
-  working_dir: "./terraform/env"
+  working_dir: "."
 
 jobs:
-  plan:
+  terraform_plan:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,11 +22,9 @@ jobs:
 
       - name: Plan
         uses: gruntwork-io/terragrunt-action@v2
-        continue-on-error: true
-        id: plan
         with:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: "run-all plan -out plan"
-          tg_comment: 1
+          tg_comment: true

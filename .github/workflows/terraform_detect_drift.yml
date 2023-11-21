@@ -1,12 +1,24 @@
-name: Detect Drift
+name: Terraform Detect Drift
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
+
+env:
+  # NOTE: please keep these in sync with ../../.terra*-version
+  tf_version: "1.6.4"
+  tg_version: "0.53.5"
+  working_dir: "."
+
+# Cancel in progress workflows on pull_requests.
+# https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
-  detect-drift:
+  terraform_detect_drift:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -14,32 +26,40 @@ jobs:
 
       # We don't want to run this job if someone has already obtained the lock
       - name: Obtain the lock
-        id: lock_check
-        run: ./bin/obtain-lock >> $GITHUB_OUTPUT
+        id: obtain_lock
+        run: ./bin/obtain-lock >> $GITHUB_OUTPUT || true
 
-      - name: Check if the lock was obtained
-        if: steps.lock_check.outcome == 'failure'
-        run: exit 0
-      
       - name: Plan
+        if: steps.obtain_lock.output.lock_obtained == 'true'
         uses: gruntwork-io/terragrunt-action@v2
         continue-on-error: true
         id: plan
         with:
-            tg_version: 0.53.5
-            tf_version: 1.6.4
-            tg_dir: ./terraform/env
-            tg_command: 'run-all plan -out plan -detailed-exitcode'
-            tg_comment: true
-      
-      - name: Terraform Drift
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir: ${{ env.working_dir }}
+          tg_command: "run-all plan -out plan -detailed-exitcode"
+          tg_comment: true
+
+      - name: Update .drift
         if: steps.plan.outcome == 'failure'
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions.github.com"
-          git checkout -b drift-branch
-          date -Iseconds > .drift
-          git add .drift
-          git commit -m "Update drift file"
-          git push origin drift-branch
-          gh pr create --title "Drift detected" --body "Update drift file"
+        run: date -Ins > .drift
+
+      - name: Create PR
+        if: steps.plan.outcome == 'failure'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: "tacos/drift"
+          commit-message: "fix(drift): terraform drift autodetected!"
+          body: |
+            Drift detected!
+
+            ---
+
+            ```
+            {steps.plan.tg_action_output}
+            ```
+          reviewers: |
+            buck.evan@sentry.io
+            ian.woodard@sentry.io
+          labels: ":taco::drift"

@@ -1,25 +1,24 @@
-name: Release lock
+name: Terraform Unlock
 
 on:
   pull_request:
     types: [labeled]
 
 jobs:
-  release:
+  terraform_unlock:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
     if: ${{ github.event.label.name == ':taco::unlock' }}
     steps:
-      - name: Checkout code
+      - name: Checkout our scripts
         uses: actions/checkout@v3
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Release Terraform lock
-        id: release_lock
         run: ./bin/release-lock
 
       - name: Reset label
@@ -28,7 +27,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const lockReleased = "${{ steps.release_lock.outputs.lock_released }}"
             github.rest.issues.removeLabel({
               issue_number: context.issue.number,
               owner: context.repo.owner,
