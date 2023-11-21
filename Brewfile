@@ -1,0 +1,2 @@
+brew "tgenv"
+brew "tfenv"
