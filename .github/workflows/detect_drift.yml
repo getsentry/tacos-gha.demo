@@ -1,0 +1,45 @@
+name: Detect Drift
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  detect-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # We don't want to run this job if someone has already obtained the lock
+      - name: Obtain the lock
+        id: lock_check
+        run: ./bin/obtain-lock >> $GITHUB_OUTPUT
+
+      - name: Check if the lock was obtained
+        if: steps.lock_check.outcome == 'failure'
+        run: exit 0
+      
+      - name: Plan
+        uses: gruntwork-io/terragrunt-action@v2
+        continue-on-error: true
+        id: plan
+        with:
+            tg_version: 0.53.5
+            tf_version: 1.6.4
+            tg_dir: ./terraform/env
+            tg_command: 'run-all plan -out plan -detailed-exitcode'
+            tg_comment: true
+      
+      - name: Terraform Drift
+        if: steps.plan.outcome == 'failure'
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions.github.com"
+          git checkout -b drift-branch
+          date -Iseconds > .drift
+          git add .drift
+          git commit -m "Update drift file"
+          git push origin drift-branch
+          gh pr create --title "Drift detected" --body "Update drift file"
