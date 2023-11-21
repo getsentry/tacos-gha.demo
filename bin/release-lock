@@ -1,8 +1,11 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 # Placeholder for Release Lock command
 
-if [ $((RANDOM % 2)) -eq 0 ]; then
+failure_rate=0
+
+set -x
+if [ $((RANDOM % 100)) -ge "$failure_rate" ]; then
   exit 0
 else
   exit 1

@@ -8,9 +8,10 @@ set -euo pipefail
 #  1. timeout -s SIGKILL 2 terraform plan --lock=true --var sleep=9999
 #  2. https://github.com/minamijoyo/tflock
 
+failure_rate=0
 
 set -x
-if [ $((RANDOM % 2)) -eq 0 ]; then
+if [ $((RANDOM % 100)) -ge "$failure_rate" ]; then
   echo "lock_obtained=true"
 else
   echo "lock_obtained=false"
