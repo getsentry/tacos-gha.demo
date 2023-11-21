@@ -16,8 +16,8 @@ jobs:
         continue-on-error: true
         id: plan
         with:
-            tg_version: 0.53.5
-            tf_version: 1.6.4
+            tg_version: 'v0.53.5'
+            tf_version: '1.6.4'
             tg_dir: ./terraform/env
             tg_command: 'run-all plan -out plan'
             tg_comment: true
