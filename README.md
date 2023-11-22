@@ -16,4 +16,13 @@ tgenv install
 
 (You may need to [install homebrew].)
 
+## Usage
+
+To do the common plan / review / apply cycle:
+
+```
+sudo-sac terragrunt run-all plan -out plan
+sudo-sac terragrunt run-all apply plan
+```
+
 [install homebrew]: https://brew.sh/
