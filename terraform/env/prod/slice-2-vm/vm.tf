@@ -7,7 +7,7 @@ resource "random_uuid" "disk_id" {
 
 resource "null_resource" "vm" {
   triggers = {
-    name    = "${var.deploy_env}-vm-1"
+    name    = "${var.deploy_env}-vm-11"
     disk_id = random_uuid.disk_id.result
   }
 }
