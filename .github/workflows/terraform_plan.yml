@@ -9,6 +9,8 @@ env:
   tf_version: "1.6.4"
   tg_version: "0.53.5"
   working_dir: "."
+  deploy_environ: "dev"
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   terraform_plan:
@@ -20,10 +22,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: set workload identity provider
+        id: set-workload-identity-provider
+        run: ./lib/ci/set-workload-identity-provider "$deploy_environ"
+
+      - name: set terraformer
+        id: set-terraformer
+        working-directory: ${{ env.working_dir }}
+        run: ./lib/ci/set-terraformer
+
+      - name: gcp auth
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{steps.set-workload-identity-provider.outputs.workload_identity_provider}}
+          service_account: ${{steps.set-terraformer.outputs.terraformer}}
+
       - name: Plan
         uses: gruntwork-io/terragrunt-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
