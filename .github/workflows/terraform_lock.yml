@@ -5,27 +5,20 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  terraform_lock:
-    runs-on: ubuntu-latest
+  tacos_lock:
     permissions:
       contents: read
+      id-token: write
       pull-requests: write
-    steps:
-      - name: Checkout our scripts
-        uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+    uses: getsentry/tacos-gha/.github/workflows/lock@main
+    with:
+      slices:
+        - terragrunt/regions/multi-tenant/tacos-gha
+        - terraform/.../dns
 
-      - name: Obtain the lock
-        id: lock_check
-        run: ./bin/obtain-lock >> $GITHUB_OUTPUT
-
-      - name: Comment on PR whether lock is obtained
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const lockObtained = ${{ steps.lock_check.outputs.lock_obtained }}
-            const script = require('./src/lock-acquisition-comment.js')
-            console.log(script({github, context, lockObtained}))
+      target: "./iac-security/env/prod/"
+      gcp_environ: prod
+      gha_deploy_environment: iac-security@prod
+      service_account_email: iac-security-tf-apply@sac-prod-sa.iam.gserviceaccount.com
+    secrets: inherit
