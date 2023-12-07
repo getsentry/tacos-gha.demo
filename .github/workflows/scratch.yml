@@ -34,11 +34,12 @@ jobs:
     steps:
       - name: show event
         run: |
-          : '${{toJSON(github.event)}}'
+          : <<'EOF'
+            ${{toJSON(github.event)}}
+          EOF
 
       - name: show context
         run: |
-          # "jobs": ${{ toJSON(jobs) }}
           jq . <<< '{
             "github": ${{ toJSON(github) }}
             "env": ${{ toJSON(env) }}
