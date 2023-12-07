@@ -20,6 +20,10 @@ jobs:
       id-token: write
       pull-requests: write
     steps:
+      - name: show event
+        run: |
+          : '${{toJSON(github.event)}}'
+
       - name: Checkout
         uses: actions/checkout@v3
 

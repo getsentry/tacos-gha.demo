@@ -32,14 +32,18 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: show event
+        run: |
+          : '${{toJSON(github.event)}}'
+
       - name: show context
         run: |
+          # "jobs": ${{ toJSON(jobs) }}
           jq . <<< '{
             "github": ${{ toJSON(github) }}
             "env": ${{ toJSON(env) }}
             "vars": ${{ toJSON(vars) }}
             "job": ${{ toJSON(job) }}
-            "jobs": ${{ toJSON(jobs) }}
             "steps": ${{ toJSON(steps) }}
             "runner": ${{ toJSON(runner) }}
             "secrets": ${{ toJSON(secrets) }}

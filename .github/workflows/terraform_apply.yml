@@ -1,10 +1,10 @@
 name: Terraform Apply
 
+# https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+# https://docs.github.com/en/webhooks/webhook-events-and-payloads
 on:
   pull_request:
-    types: [labeled]
-  pull_request_target:
-    types: [closed]
+    types: [labeled] # need to filter for :tacos::apply label
 
 jobs:
   terraform_apply:
@@ -12,8 +12,14 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    if: ${{ github.event.label.name == ':taco::apply' }}
+      if: |
+        github.event.label.name == ':taco::apply'
     steps:
+      ## https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+      - name: show event
+        run: |
+          : '${{toJSON(github.event)}}'
+
       - name: Checkout our scripts
         uses: actions/checkout@v3
 

@@ -12,6 +12,10 @@ jobs:
       pull-requests: write
     if: ${{ github.event.label.name == ':taco::unlock' }}
     steps:
+      - name: show event
+        run: |
+          : '${{toJSON(github.event)}}'
+
       - name: Checkout our scripts
         uses: actions/checkout@v3
 

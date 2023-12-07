@@ -21,6 +21,10 @@ jobs:
   terraform_detect_drift:
     runs-on: ubuntu-latest
     steps:
+      - name: show event
+        run: |
+          : '${{toJSON(github.event)}}'
+
       - name: Checkout
         uses: actions/checkout@v3
 
