@@ -22,7 +22,9 @@ jobs:
     steps:
       - name: show event
         run: |
-          : '${{toJSON(github.event)}}'
+          : <<'EOF'
+            ${{toJSON(github.event)}}
+          EOF
 
       - name: Checkout
         uses: actions/checkout@v3

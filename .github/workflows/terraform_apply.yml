@@ -12,13 +12,15 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-      if: |
-        github.event.label.name == ':taco::apply'
+    if: |
+      github.event.label.name == ':taco::apply'
     steps:
       ## https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
       - name: show event
         run: |
-          : '${{toJSON(github.event)}}'
+          : <<'EOF'
+            ${{toJSON(github.event)}}
+          EOF
 
       - name: Checkout our scripts
         uses: actions/checkout@v3
