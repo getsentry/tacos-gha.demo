@@ -32,24 +32,23 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - name: show event
+      - name: ok
+        id: ok
+        run: echo ok
+
+      - name: show full context
         run: |
           : <<'EOF'
-            ${{toJSON(github.event)}}
+          github:   ${{ toJSON(github) }},
+          env:      ${{ toJSON(env) }},
+          vars:     ${{ toJSON(vars) }},
+          job:      ${{ toJSON(job) }},
+          jobs:     # for reusable workflows only
+          steps:    ${{ toJSON(steps) }},
+          runner:   ${{ toJSON(runner) }},
+          secrets:  ${{ toJSON(secrets) }},
+          strategy: ${{ toJSON(strategy) }},
+          matrix:   ${{ toJSON(matrix) }},
+          needs:    ${{ toJSON(needs) }},
+          inputs:   ${{ toJSON(inputs) }},
           EOF
-
-      - name: show context
-        run: |
-          jq . <<< '{
-            "github": ${{ toJSON(github) }}
-            "env": ${{ toJSON(env) }}
-            "vars": ${{ toJSON(vars) }}
-            "job": ${{ toJSON(job) }}
-            "steps": ${{ toJSON(steps) }}
-            "runner": ${{ toJSON(runner) }}
-            "secrets": ${{ toJSON(secrets) }}
-            "strategy": ${{ toJSON(strategy) }}
-            "matrix": ${{ toJSON(matrix) }}
-            "needs": ${{ toJSON(needs) }}
-            "inputs": ${{ toJSON(inputs) }}
-          }'
