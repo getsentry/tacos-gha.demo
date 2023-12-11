@@ -16,6 +16,15 @@ tgenv install
 
 (You may need to [install homebrew].)
 
+## Onboarding
+
+Each developer has to submit a simple change:
+
+```
+make terraform/env.$USER
+git commit -am "feat: onboarding dev $USER"
+```
+
 ## Usage
 
 To do the common plan / review / apply cycle:
