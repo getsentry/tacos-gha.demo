@@ -9,9 +9,9 @@ inputs = merge(
 
 
 generate "_backend.tf" {
-  path = "_backend.tf"
+  path      = "_backend.tf"
   if_exists = "overwrite"
-  contents = <<EOF
+  contents  = <<EOF
 terraform {
   backend "gcs" {
     bucket   = "sac-dev-tf--tacos-gha"

@@ -1,0 +1,26 @@
+#!/bin/bash
+set -euo pipefail
+# make a personalized terraform tree, to avoid clashing of state / locking
+# during testing:
+
+export PATH="/bin:/usr/bin:/opt/homebrew/bin:$PWD/bin"
+
+src='terraform/env'
+dst="$src.$USER"
+
+set -x
+: clear out the destination
+git rm -rf "$dst" || true
+rm -rf "$dst"
+
+: clean and copy the source
+git clean "$src" -fdxf
+cp -r "$src" "$dst"
+
+git add "$dst"
+sudo-sac terragrunt run-all init --terragrunt-include-dir="$dst/**/*"
+PAGER='' git diff "$dst"
+git add "$dst"
+
+
+echo "Done. Please commit: $dst"
