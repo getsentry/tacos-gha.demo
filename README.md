@@ -6,7 +6,7 @@
 
 ## Developer Setup
 
-To install required tools, please run:
+To install required tools, please run: (after you [install homebrew])
 
 ```
 brew bundle
@@ -14,7 +14,8 @@ tfenv install
 tgenv install
 ```
 
-(You may need to [install homebrew].)
+Some important environment variables are managed via direnv. Please ensure it's
+working for you: https://direnv.net/docs/hook.html
 
 ## Onboarding
 
