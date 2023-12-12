@@ -1,0 +1,14 @@
+#!/bin/bash
+# Clean up any orphaned test branch(es) with my name ($USER) on it.
+set -euxo pipefail
+
+git remote update
+git branch -r |
+  grep origin/test/$USER |
+  sed 's@origin/@@' |
+  xargs -tr git push origin -d \
+;
+
+
+
+
