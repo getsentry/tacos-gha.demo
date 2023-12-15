@@ -36,7 +36,6 @@ jobs:
         run: ./bin/tf-apply
   reset_label:
     runs-on: ubuntu-latest
-    if: always()
     steps:
       - name: Reset label
         uses: actions/github-script@v7
