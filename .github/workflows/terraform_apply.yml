@@ -7,13 +7,24 @@ on:
     types: [labeled] # need to filter for :tacos::apply label
 
 jobs:
+  check_label:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Prevent premature apply/merging
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            if [[ "${{ github.event.label.name }}" != ":taco::apply" ]] || [[ "${{ github.event.pull_request.draft }}" == "true" ]]; then
+              echo "Failing job because label is not :taco::apply or PR is a draft"
+              exit 1
+            fi
   terraform_apply:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
-    if: |
-      github.event.label.name == ':taco::apply' && github.event.pull_request.draft == false
     steps:
       ## https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
       - name: show event
@@ -36,6 +47,7 @@ jobs:
         run: ./bin/tf-apply
   reset_label:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.label.name == ':taco::apply'
     steps:
       - name: Reset label
         uses: actions/github-script@v7
