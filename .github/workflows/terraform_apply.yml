@@ -13,7 +13,7 @@ jobs:
       contents: read
       pull-requests: write
     if: |
-      github.event.label.name == ':taco::apply'
+      ${{ github.event.label.name == ':taco::apply' && github.event.pull_request.draft == false }}
     steps:
       ## https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
       - name: show event
