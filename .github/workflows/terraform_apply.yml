@@ -13,7 +13,7 @@ jobs:
       contents: read
       pull-requests: write
     if: |
-      github.event.label.name == ':taco::apply'
+      github.event.label.name == ':taco::apply' && github.event.pull_request.draft == false
     steps:
       ## https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
       - name: show event
@@ -34,10 +34,11 @@ jobs:
       # No need to write a comment on the PR since the user can see the output of the action
       - name: Terraform Apply
         run: ./bin/tf-apply
-
+  reset_label:
+    runs-on: ubuntu-latest
+    steps:
       - name: Reset label
         uses: actions/github-script@v7
-        if: always()
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
