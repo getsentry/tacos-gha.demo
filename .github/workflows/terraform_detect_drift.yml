@@ -11,6 +11,10 @@ env:
   tg_version: "0.53.5"
   working_dir: "."
 
+  # TODO: use action/direnv to keep this centralized and in sync with manual
+  # behavior
+  TF_CLI_ARGS_plan: "-lock=false -out=plan"
+
 # Cancel in progress workflows on pull_requests.
 # https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
 concurrency:
@@ -44,7 +48,7 @@ jobs:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
-          tg_command: "run-all plan -out plan -detailed-exitcode"
+          tg_command: "run-all plan -detailed-exitcode"
           tg_comment: true
 
       - name: Update .drift

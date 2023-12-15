@@ -12,6 +12,10 @@ env:
   deploy_environ: "dev"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # TODO: use action/direnv to keep this centralized and in sync with manual
+  # behavior
+  TF_CLI_ARGS_plan: "-lock=false -out=plan"
+
 jobs:
   terraform_plan:
     runs-on: ubuntu-latest
@@ -51,5 +55,5 @@ jobs:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
-          tg_command: "run-all plan -out plan"
+          tg_command: "run-all plan"
           tg_comment: 1
