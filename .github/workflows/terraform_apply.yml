@@ -4,7 +4,9 @@ name: Terraform Apply
 # https://docs.github.com/en/webhooks/webhook-events-and-payloads
 on:
   pull_request:
-    types: [labeled, opened, edited, synchronize, ready_for_review, reopened] # need to filter for :tacos::apply label
+    types: [opened, edited, synchronize, labeled] # need to filter for :tacos::apply label
+  pull_request_review: 
+    types: [submitted]
 
 jobs:
   check_terraform:
