@@ -5,8 +5,6 @@ name: Terraform Apply
 on:
   pull_request:
     types: [opened, edited, synchronize, labeled] # need to filter for :tacos::apply label
-  pull_request_review: 
-    types: [submitted]
 
 jobs:
   check_terraform:
