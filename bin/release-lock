@@ -1,12 +1,13 @@
 #!/bin/bash
 set -euo pipefail
-# Placeholder for Release Lock command
 
-FAILURE_RATE=${FAILURE_RATE:-0}
-percentile=$((RANDOM % 100))
+HERE="$(cd "$(dirname "$0")"; pwd)"
+
+"$HERE/"../lib/tf-lock/tf-unlock
+status=$?
 
 set -x
-if [ $percentile -ge "$FAILURE_RATE" ]; then
+if [ $status -eq 0 ]; then
   exit 0
 else
   exit 1
