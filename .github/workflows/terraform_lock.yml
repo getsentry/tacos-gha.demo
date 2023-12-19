@@ -4,6 +4,13 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+defaults:
+  run:
+    # enable xtrace and nounset by default
+    # the default default is:
+    #      bash --noprofile --norc -eo pipefail {0}
+    shell: bash --noprofile --norc -eo pipefail -ux {0}
+
 jobs:
   terraform_lock:
     runs-on: ubuntu-latest
@@ -23,6 +30,11 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Install expect
+        run: ./lib/ci/install-expect
 
       - name: Obtain the lock
         id: lock_check
