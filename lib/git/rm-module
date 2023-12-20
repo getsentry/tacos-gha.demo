@@ -1,0 +1,5 @@
+#!/bin/sh
+newmodule="$1"
+
+set -x
+git rm -f "$newmodule"
