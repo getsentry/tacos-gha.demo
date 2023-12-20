@@ -11,6 +11,7 @@ env:
   working_dir: "."
   deploy_environ: "dev"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TERRAGRUNT_INCLUDE_MODULE_PREFIX: "true"
 
   # TODO: use action/direnv to keep this centralized and in sync with manual
   # behavior
