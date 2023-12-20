@@ -6,11 +6,20 @@ on:
   pull_request:
     types: [labeled] # need to filter for :tacos::apply label
 
+env:
+  # NOTE: please keep these in sync with ../../.terra*-version
+  tf_version: "1.6.4"
+  tg_version: "0.53.5"
+  working_dir: "."
+  deploy_environ: "dev"
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
       pull-requests: write
     if: |
       github.event.label.name == ':taco::apply' && github.event.pull_request.draft == false
@@ -25,15 +34,34 @@ jobs:
       - name: Checkout our scripts
         uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      - name: set workload identity provider
+        id: set-workload-identity-provider
+        run: ./lib/ci/set-workload-identity-provider "$deploy_environ"
+      
+      - name: set terraformer
+        id: set-terraformer
+        working-directory: ${{ env.working_dir }}
+        run: ./lib/ci/set-terraformer
+
+      - name: gcp auth
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{steps.set-workload-identity-provider.outputs.workload_identity_provider}}
+          service_account: ${{steps.set-terraformer.outputs.terraformer}}
 
       - name: Obtain the lock
         run: ./bin/obtain-lock
 
-      # No need to write a comment on the PR since the user can see the output of the action
-      - name: Terraform Apply
-        run: ./bin/tf-apply
+      - name: Apply
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir: ${{ env.working_dir }}
+          tg_command: "run-all apply --auto-approve"
+          tg_comment: 1
+
   reset_label:
     runs-on: ubuntu-latest
     steps:
