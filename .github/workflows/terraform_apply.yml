@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
       pull-requests: write
     if: |
       github.event.label.name == ':taco::apply' && github.event.pull_request.draft == false
