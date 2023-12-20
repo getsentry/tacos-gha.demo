@@ -45,7 +45,7 @@ jobs:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
-          tg_command: "run-all plan"
+          tg_command: "run-all apply --auto-approve"
           tg_comment: 1
 
   reset_label:
