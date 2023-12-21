@@ -1,8 +1,11 @@
 #!/bin/bash
 set -eEuo pipefail
+root_module="${1:-"$PWD"}"
 
+cd "$root_module"
 error="$(
   # swap stdout and stderr:
+  terraform init
   terraform force-unlock -force 1 3>&2 2>&1 1>&3 <&-
 )" && status=$? || status=$?
 
