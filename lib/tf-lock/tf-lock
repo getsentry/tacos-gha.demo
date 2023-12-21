@@ -8,6 +8,7 @@ cd "$root_module"
 lock_id=$("$HERE/"tf-lock-id) && status=$? || status=$?
 
 if (( status == 2 )); then
+  terraform init
   "$HERE/"lib/tf-lock-acquire.exp  # acquire
   # second acquire should fail, and print the lock id
   if "$HERE/"lib/tf-lock-acquire.exp; then
