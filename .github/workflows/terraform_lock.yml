@@ -45,7 +45,7 @@ jobs:
 
   terraform_lock:
     if: github.event.pull_request.draft == false
-    needs: [tf-root-modules]
+    needs: [determine-tf-root-modules]
 
     runs-on: ubuntu-latest
     permissions:
@@ -56,7 +56,8 @@ jobs:
       fail-fast: false
       matrix:
         tf-root-module:
-          ${{ fromJSON(needs.tf-root-modules.outputs.tf-root-modules) }}
+          ${{ fromJSON(needs.determine-tf-root-modules.outputs.tf-root-modules)
+          }}
 
     steps:
       - name: Checkout our scripts
