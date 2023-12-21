@@ -76,7 +76,7 @@ jobs:
 
       - name: Obtain the lock
         id: lock_check
-        run: ./bin/obtain-lock ${{matrix.root_module}} >> $GITHUB_OUTPUT
+        run: ./bin/obtain-lock '${{matrix.tf-root-module}}' >> $GITHUB_OUTPUT
 
       - name: Comment on PR whether lock is obtained
         if: always()
