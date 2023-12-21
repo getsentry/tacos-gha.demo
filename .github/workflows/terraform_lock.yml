@@ -33,11 +33,14 @@ jobs:
           filters: "all: ['**']"
           list-files: json
 
-      - name: Checkout our scripts
-        uses: actions/checkout@v3
+      # needed?
+      ### - name: Checkout our scripts
+      ###   uses: actions/checkout@v3
 
       - id: tf-root-modules
         run: |
+          python3 --version
+          python3 -m pip list
           ./lib/ci/dependent-slices  <<'EOF' | tee -a "$GITHUB_OUTPUT"
           ${{steps.files.outputs.all_files}}
           EOF

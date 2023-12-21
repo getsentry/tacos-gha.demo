@@ -1,10 +1,11 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3.10
 from __future__ import annotations
 
-import typing
 from dataclasses import dataclass
 from pathlib import Path, PurePath
-from typing import Callable, Iterable, NewType, Self
+
+import typing_extensions as typing
+from typing_extensions import Callable, Iterable, NewType, Self
 
 # NewTypes exist only during typing, but help keep track of things
 Dir = NewType("Dir", PurePath)
