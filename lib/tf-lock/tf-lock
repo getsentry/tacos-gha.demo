@@ -3,10 +3,9 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")"; pwd)"
 root_module="${1:-"$PWD"}"
 
-set -x
-cd "$root_module"
-lock_id=$("$HERE/"tf-lock-id) && status=$? || status=$?
+lock_id=$("$HERE/"tf-lock-id "$root_module") && status=$? || status=$?
 
+cd "$root_module"
 if (( status == 2 )); then
   "$HERE/"lib/tf-lock-acquire.exp  # acquire
   # second acquire should fail, and print the lock id
