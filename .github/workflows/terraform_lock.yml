@@ -18,7 +18,7 @@ jobs:
 
     runs-on: ubuntu-latest
     outputs:
-      tf-root-modules: ${{ steps.tf-root-modules.outputs.tf-root-modules }}
+      slices: ${{ steps.slices.outputs.slices }}
 
     steps:
       - name: show event
@@ -39,11 +39,13 @@ jobs:
       # see ./.python-version
       - uses: actions/setup-python@v5
 
-      - id: tf-root-modules
+      - id: slices
         run: |
-          ./lib/ci/dependent-slices  <<'EOF' | tee -a "$GITHUB_OUTPUT"
+          ( echo -n slices=
+            ./lib/ci/dependent-slices  <<'EOF'
           ${{steps.files.outputs.all_files}}
           EOF
+          ) | tee -a "$GITHUB_OUTPUT"
 
   terraform_lock:
     if: github.event.pull_request.draft == false
@@ -58,8 +60,7 @@ jobs:
       fail-fast: false
       matrix:
         tf-root-module:
-          ${{ fromJSON(needs.determine-tf-root-modules.outputs.tf-root-modules)
-          }}
+          ${{ fromJSON(needs.determine-tf-root-modules.outputs.slices) }}
 
     steps:
       - name: Checkout our scripts
