@@ -1,0 +1,26 @@
+#!/bin/bash
+# make a whole bunch of modules
+set -e
+
+modules="$(
+  git ls-files |
+    grep '\.tf$' |
+    xargs dirname |
+    sort -u |
+    grep -v module |
+    xargs -n1 ls-parents |
+    grep "$PWD" |
+    sort -u |
+    sed -r 's@^(.*)/(.*)$@\1/\2/module/\2/\2.tf@' \
+  ;
+)"
+
+set -x
+half=$(( $(wc -l <<< "$modules") / 2 ))
+shuf \
+    <<< "$modules" \
+    --random-source=/dev/zero |
+  head -n"$half" |
+  sort |
+  xargs -rn1 ./lib/git/new-module \
+;

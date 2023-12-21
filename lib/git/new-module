@@ -1,0 +1,10 @@
+#!/bin/sh
+newmodule="$1"
+
+set -x
+if ! [ -f "$newmodule" ]; then
+  mkdir -p "$newmodule"
+  rmdir "$newmodule"
+  touch "$newmodule"
+fi
+git add "$newmodule"
