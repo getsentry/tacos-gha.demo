@@ -14,6 +14,11 @@ env:
   deploy_environ: "dev"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # TODO: use action/direnv to keep these centralized and in sync with manual
+  # behavior
+  TERRAGRUNT_INCLUDE_MODULE_PREFIX: true
+  TF_CLI_ARGS_plan: "-lock=false -out=plan"
+
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest

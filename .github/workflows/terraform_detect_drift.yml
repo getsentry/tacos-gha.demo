@@ -11,8 +11,9 @@ env:
   tg_version: "0.53.5"
   working_dir: "."
 
-  # TODO: use action/direnv to keep this centralized and in sync with manual
+  # TODO: use action/direnv to keep these centralized and in sync with manual
   # behavior
+  TERRAGRUNT_INCLUDE_MODULE_PREFIX: true
   TF_CLI_ARGS_plan: "-lock=false -out=plan"
 
 # Cancel in progress workflows on pull_requests.
