@@ -76,13 +76,13 @@ jobs:
 
       - name: Obtain the lock
         id: lock_check
-        run: ./bin/obtain-lock '${{matrix.tf-root-module}}' >> $GITHUB_OUTPUT
+        run: ./lib/ci/obtain-lock '${{matrix.tf-root-module}}' >> $GITHUB_OUTPUT
 
       - name: Comment on PR whether lock is obtained
         if: always()
         uses: actions/github-script@v7
         with:
           script: |
-            const lockObtained = ${{ steps.lock_check.outputs.lock_obtained }}
+            const lockObtained = "${{ steps.lock_check.outputs.lock_obtained }}" === "true"
             const script = require('./src/lock-acquisition-comment.js')
             console.log(script({github, context, lockObtained}))

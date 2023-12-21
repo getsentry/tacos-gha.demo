@@ -38,7 +38,7 @@ jobs:
       # We don't want to run this job if someone has already obtained the lock
       - name: Obtain the lock
         id: obtain_lock
-        run: ./bin/obtain-lock >> $GITHUB_OUTPUT || true
+        run: ./lib/ci/obtain-lock >> $GITHUB_OUTPUT
 
       - name: Plan
         if: steps.obtain_lock.output.lock_obtained == 'true'
