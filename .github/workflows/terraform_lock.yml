@@ -4,6 +4,19 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+env:
+  # NOTE: please keep these in sync with ../../.terra*-version
+  tf_version: "1.6.4"
+  tg_version: "0.53.5"
+  working_dir: "."
+  deploy_environ: "dev"
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # TODO: use action/direnv to keep these centralized and in sync with manual
+  # behavior
+  TERRAGRUNT_INCLUDE_MODULE_PREFIX: true
+  TF_CLI_ARGS_plan: "-lock=false -out=plan"
+
 defaults:
   run:
     # enable xtrace and nounset by default
@@ -65,6 +78,22 @@ jobs:
     steps:
       - name: Checkout our scripts
         uses: actions/checkout@v3
+
+      - name: set workload identity provider
+        id: set-workload-identity-provider
+        run: ./lib/ci/set-workload-identity-provider "$deploy_environ"
+
+      - name: set terraformer
+        id: set-terraformer
+        working-directory: ${{ env.working_dir }}
+        run: ./lib/ci/set-terraformer
+
+      - name: gcp auth
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{steps.set-workload-identity-provider.outputs.workload_identity_provider}}
+          service_account: ${{steps.set-terraformer.outputs.terraformer}}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
