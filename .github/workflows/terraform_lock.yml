@@ -12,12 +12,14 @@ defaults:
     shell: bash --noprofile --norc -eo pipefail -ux {0}
 
 jobs:
-  terraform_lock:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
+  determine-tf-root-modules:
+    name: "Determine TF slices to lock"
     if: github.event.pull_request.draft == false
+
+    runs-on: ubuntu-latest
+    outputs:
+      tf-root-modules: ${{ steps.tf-root-modules.outputs.tf-root-modules }}
+
     steps:
       - name: show event
         run: |
@@ -25,6 +27,38 @@ jobs:
             ${{toJSON(github.event)}}
           EOF
 
+      - id: files
+        uses: getsentry/paths-filter@v2.11.1
+        with:
+          filters: "all: ['**']"
+          list-files: json
+
+      # needed?
+      ###- name: Checkout our scripts
+      ###  uses: actions/checkout@v3
+
+      - id: tf-root-modules
+        run: |
+          ./lib/ci/dependent-slices  <<'EOF' | tee -a "$GITHUB_OUTPUT"
+          ${{steps.files.outputs.all_files}}
+          EOF
+
+  terraform_lock:
+    if: github.event.pull_request.draft == false
+    needs: [tf-root-modules]
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        tf-root-module:
+          ${{ fromJSON(needs.tf-root-modules.outputs.tf-root-modules) }}
+
+    steps:
       - name: Checkout our scripts
         uses: actions/checkout@v3
 
@@ -38,7 +72,7 @@ jobs:
 
       - name: Obtain the lock
         id: lock_check
-        run: ./bin/obtain-lock >> $GITHUB_OUTPUT
+        run: ./bin/obtain-lock ${{matrix.root_module}} >> $GITHUB_OUTPUT
 
       - name: Comment on PR whether lock is obtained
         if: always()
