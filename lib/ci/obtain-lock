@@ -8,8 +8,8 @@ echo -n lock_id=
 status=$?
 
 if [ $status -eq 0 ]; then
-  echo "lock_obtained=true"
+  echo "true"
 else
-  echo "lock_obtained=false"
+  echo "false"
   exit 1
 fi
