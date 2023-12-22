@@ -2,7 +2,7 @@
 
 summary=""
 
-for file in lock_result_*.txt; do
+for file in artifacts/*/lock_result.txt; do
   lock_result=$(cat "$file")
 
   # Extract the artifact name, removing the prefix "lock_result_" and suffix ".txt" and replacing '-' with '/'
