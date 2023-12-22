@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")"; pwd)"
+
+echo -n lock_id=
+"$HERE/"../tf-lock/tf-lock "$@"
+status=$?
+
+if [ $status -eq 0 ]; then
+  echo "lock_obtained=true"
+else
+  echo "lock_obtained=false"
+  exit 1
+fi

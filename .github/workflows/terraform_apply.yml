@@ -42,7 +42,7 @@ jobs:
       - name: set workload identity provider
         id: set-workload-identity-provider
         run: ./lib/ci/set-workload-identity-provider "$deploy_environ"
-      
+
       - name: set terraformer
         id: set-terraformer
         working-directory: ${{ env.working_dir }}
@@ -56,7 +56,7 @@ jobs:
           service_account: ${{steps.set-terraformer.outputs.terraformer}}
 
       - name: Obtain the lock
-        run: ./bin/obtain-lock
+        run: ./lib/ci/obtain-lock
 
       - name: Apply
         uses: gruntwork-io/terragrunt-action@v2
@@ -69,6 +69,8 @@ jobs:
 
   reset_label:
     runs-on: ubuntu-latest
+    if: |
+      github.event.label.name == ':taco::apply'
     steps:
       - name: Reset label
         uses: actions/github-script@v7

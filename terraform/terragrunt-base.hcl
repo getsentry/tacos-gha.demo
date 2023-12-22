@@ -23,7 +23,7 @@ EOF
 retryable_errors = [
   # a 2-10% flake that seems to be caused by:
   #   https://github.com/hashicorp/terraform/blob/main/internal/providercache/installer.go#L296-L306
-  "(?s).*Error: Failed to query available provider packages.*: stream error: stream ID 1;.*INTERNAL_ERROR; received from peer",
+  "(?s).*Failed to query available provider packages.*INTERNAL_ERROR; received from peer.*",
 
   # default values:  https://terragrunt.gruntwork.io/docs/reference/config-blocks-and-attributes/#retryable_errors
   "(?s).*Failed to load state.*tcp.*timeout.*",

@@ -24,8 +24,11 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Install expect
+        run: sudo apt-get update && sudo apt-get install -y expect
+
       - name: Release Terraform lock
-        run: ./bin/release-lock
+        run: ./lib/ci/release-lock
 
       - name: Reset label
         uses: actions/github-script@v7
