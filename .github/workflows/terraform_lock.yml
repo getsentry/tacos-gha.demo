@@ -110,11 +110,18 @@ jobs:
       - name: Obtain the lock
         id: lock_check
         run: |
-          lock_obtained=$(./lib/ci/obtain-lock '${{matrix.tf-root-module}}')
-          echo "lock_results={\"slice\": \"${{matrix.tf-root-module}}\", \"lock_obtained\": \"$lock_obtained\"}" >> $GITHUB_OUTPUT
+          output=$(./lib/ci/lock-terraform '${{matrix.tf-root-module}}')
+          lock_obtained=$(echo "$output" | jq -r '.lock_obtained')
+          existing_json=$(cat $GITHUB_OUTPUT)
+          if ! echo $existing_json | jq 'has("lock_results") and (.lock_results|type=="array")'; then
+            existing_json='{"lock_results": []}'
+          fi
+          merged_json=$(echo $existing_json | jq -c ".lock_results += [{\"slice\": \"${{matrix.tf-root-module}}\", \"lock_obtained\": \"$lock_obtained\"}]")
+          echo $merged_json > $GITHUB_OUTPUT
 
   summarize_lock_results:
     needs: [terraform_lock]
+    if: always() && needs.terraform_lock.outputs.lock_results != '[]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout our scripts
