@@ -2,5 +2,6 @@
 set -eEuo pipefail
 HERE="$(cd "$(dirname "$0")"; pwd)"
 
-tf-lock-info "$@" |
-  "$HERE/"lib/lock-id.jq
+printf '{'
+"$HERE/"error2json.sed
+echo '"lock":true}'

@@ -1,12 +1,14 @@
-#!/usr/bin/env sed -nruf
+#!/usr/bin/env sed -nrf
 1,/^Lock Info:$/ d
-/^  /! {
+
+s/^  /"/
+s/: +/": "/
+s/$/",/
+H
+
+$ {
   x
   s/\n//g
   p
   q
 }
-s/^  /"/
-s/: +/": "/
-s/$/",/
-H
