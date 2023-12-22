@@ -61,7 +61,7 @@ jobs:
           ) | tee -a "$GITHUB_OUTPUT"
 
   terraform_lock:
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false && needs.determine-tf-root-modules.outputs.slices != '[]'
     needs: [determine-tf-root-modules]
 
     runs-on: ubuntu-latest
