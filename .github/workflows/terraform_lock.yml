@@ -110,7 +110,7 @@ jobs:
       - name: Obtain the lock
         id: lock_check
         run: |
-          output=$(./lib/ci/lock-terraform '${{matrix.tf-root-module}}')
+          output=$(./lib/ci/obtain_lock '${{matrix.tf-root-module}}')
           lock_obtained=$(echo "$output" | jq -r '.lock_obtained')
           existing_json=$(cat $GITHUB_OUTPUT)
           if ! echo $existing_json | jq 'has("lock_results") and (.lock_results|type=="array")'; then
