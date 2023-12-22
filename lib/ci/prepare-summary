@@ -1,0 +1,14 @@
+#!/bin/bash
+
+summary=""
+
+for file in lock_result_*.txt; do
+  lock_result=$(cat "$file")
+
+  # Extract the artifact name, removing the prefix "lock_result_" and suffix ".txt" and replacing '-' with '/'
+  artifact_name=$(echo "$file" | sed -e 's/^lock_result_//' -e 's/\.txt$//' -e 's/-/\//g')
+
+  summary+="$artifact_name: $lock_result"$'\n'
+done
+
+echo -e "$summary"
