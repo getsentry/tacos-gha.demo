@@ -21,7 +21,10 @@ error="$(
 )"
 
 
-if grep -Eq <<< "$error" ID:; then
+if grep -Eq <<< "$error" $'ID:'; then
+  echo ERROR:
+  echo "$error"
+  echo :ERROR
   "$HERE/"lib/error2json <<< "$error"
 elif grep -Eq <<< "$error" \
     "^(│ )?"$'\t''\* storage: object doesn'\''t exist$' \
