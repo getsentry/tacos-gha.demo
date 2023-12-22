@@ -1,27 +1,11 @@
 #!/bin/bash
 set -eEuo pipefail
-root_module="${1:-"$PWD"}"
-
-cd "$root_module"
-error="$(
-  # swap stdout and stderr:
-  terraform init
-  terraform force-unlock -force 1 3>&2 2>&1 1>&3 <&-
-)" && status=$? || status=$?
-
-
-if (( status == 0 )); then
-  echo >&2 This should be impossible...
-  exit 1
-fi
-
-# print the first value labelled "ID:"
-if grep <<< "$error" -m1 ID: | sed -r 's/.*ID:[[:space:]]*//'; then
-  : all done!
-elif grep -q <<< "$error" -m1 'Failed to unlock state:'; then
-  exit 2  # terraform state not locked
-else
-  echo >&2 surface unexpected errors:
-  cat >&2 <<< "$error"
-  exit "$status"
-fi
+tf-lock-info "$@" | jq --raw-output '
+    .ID
+  | if . != null
+    then .
+    else
+      # terraform state not locked
+      halt_error(2)
+    end
+'
