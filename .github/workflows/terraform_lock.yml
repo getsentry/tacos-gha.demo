@@ -111,8 +111,12 @@ jobs:
       - name: Save lock result
         run: echo "${{ steps.lock_check.outputs.lock_obtained }}" > lock_result.txt
 
+      - name: Prepare artifact name
+        id: artifact_name
+        run: echo "artifact_name=$(echo '${{ matrix.tf-root-module }}' | tr '/' '-')" >> $GITHUB_OUTPUT
+
       - name: Upload lock result
         uses: actions/upload-artifact@v3
         with:
-          name: lock_result_${{ format('{0}', matrix.tf-root-module) }}
+          name: lock_result_${{ steps.artifact_name.outputs.artifact_name }}
           path: lock_result.txt
