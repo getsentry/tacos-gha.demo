@@ -5,10 +5,9 @@ HERE="$(cd "$(dirname "$0")"; pwd)"
 lock_id=$("$HERE/"tf-lock-id) && status=$? || status=$?
 
 if (( status == 0 )); then
-  terraform force-unlock -force "$lock_id"
+  terraform force-unlock -force -- "$lock_id" >&2
 elif (( status == 2 )); then
-  # "(terraform state not locked)"
-  : already done!
+  echo >&2 "(terraform state not locked)"
   exit 0
 else
   # surface any unexpected errors
