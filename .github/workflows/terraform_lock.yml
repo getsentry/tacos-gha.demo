@@ -114,7 +114,7 @@ jobs:
           lock_obtained=$(echo "$output" | jq -r '.lock_obtained')
           echo "Lock obtained: $lock_obtained"
           existing_json=$(cat $GITHUB_OUTPUT)
-          if ! echo $existing_json | jq 'has("lock_results") and (.lock_results|type=="array")'; then
+          if [ -z "$existing_json" ]; then
             existing_json='{"lock_results": []}'
           fi
           echo "Existing JSON: $existing_json"
