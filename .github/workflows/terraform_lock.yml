@@ -112,11 +112,14 @@ jobs:
         run: |
           output=$(./lib/ci/obtain-lock '${{matrix.tf-root-module}}')
           lock_obtained=$(echo "$output" | jq -r '.lock_obtained')
+          echo "Lock obtained: $lock_obtained"
           existing_json=$(cat $GITHUB_OUTPUT)
           if ! echo $existing_json | jq 'has("lock_results") and (.lock_results|type=="array")'; then
             existing_json='{"lock_results": []}'
           fi
+          echo "Existing JSON: $existing_json"
           merged_json=$(echo $existing_json | jq -c ".lock_results += [{\"slice\": \"${{matrix.tf-root-module}}\", \"lock_obtained\": \"$lock_obtained\"}]")
+          echo "Merged JSON: $merged_json"
           echo $merged_json > $GITHUB_OUTPUT
 
   summarize_lock_results:
