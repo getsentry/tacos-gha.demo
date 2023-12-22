@@ -114,5 +114,5 @@ jobs:
       - name: Upload lock result
         uses: actions/upload-artifact@v3
         with:
-          name: lock_result_${{matrix.tf-root-module}}
+          name: lock_result_${{ format('{0}', matrix.tf-root-module) }}
           path: lock_result.txt
