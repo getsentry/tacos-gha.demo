@@ -1,9 +1,20 @@
 #!/usr/bin/env expect
 # This script will either induce a state lock in terraform and succeed, or fail
 # with a state-already-locked error.
-proc on_error {} {
+if { [ array get ::env DEBUG ] ne "" } {
+  exp_internal 1
+}
+
+proc on_error { label } {
   upvar expect_out expect_out
-  puts stderr $expect_out(buffer)
+  if {
+    [ info exists expect_out(buffer) ] &&
+    $expect_out(buffer) ne ""
+  } {
+    puts stderr $expect_out(buffer)
+  } else {
+  puts stderr "error: $label"
+  }
   exit 1
 }
 
@@ -17,13 +28,8 @@ expect {
     # got prompt; exit un-gracefully
     exit 0
   }
-  -re " +ID: +(\[^\\r\\n]+).*$" {
-    # already locked:
-    puts "$expect_out(1,string)"
-    exit 0
-  }
-  timeout exit 1
-  eof on_error
+  timeout { on_error timeout }
+  eof { on_error eof }
 }
 
 exit 123

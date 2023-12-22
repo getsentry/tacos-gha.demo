@@ -19,8 +19,7 @@ fi
 if grep <<< "$error" -m1 ID: | sed -r 's/.*ID:[[:space:]]*//'; then
   : all done!
 elif grep -q <<< "$error" -m1 'Failed to unlock state:'; then
-  echo >&2 '(terraform state not locked)'
-  exit 2
+  exit 2  # terraform state not locked
 else
   echo >&2 surface unexpected errors:
   cat >&2 <<< "$error"
