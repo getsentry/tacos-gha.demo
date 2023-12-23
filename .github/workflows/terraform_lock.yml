@@ -144,7 +144,7 @@ jobs:
         with:
           github-token: ${{ env.GITHUB_TOKEN }}
           script: |
-            const summary = '${{ steps.summary.outputs.summary }}';
+            const summary = atob('${{ steps.summary.outputs.summary }}');
             if (summary) {
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
