@@ -1,14 +1,18 @@
 #!/bin/bash
 
+echo "Preparing summary..."
+
 summary=""
 
-echo ls -l
+for file in artifacts/*/lock_result.txt; do
+  echo "Processing $file..."
 
-for file in etc/usr/artifacts/lock_result_*/lock_result.txt; do
   lock_result=$(cat "$file")
+  echo "Lock result: $lock_result"
 
   # Extract the artifact name, removing the prefix "lock_result_" and replacing '-' with '/'
   artifact_name=$(echo "$file" | sed -e 's/^lock_result_//' -e 's/-/\//g')
+  echo "Artifact name: $artifact_name"
 
   summary+="$artifact_name: $lock_result"$'\n'
 done
