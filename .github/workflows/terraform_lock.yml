@@ -145,7 +145,7 @@ jobs:
           github-token: ${{ env.GITHUB_TOKEN }}
           script: |
             const summary = '${{ steps.summary.outputs.lock_summary }}';
-            const formattedSummary summary.replace(/,/g, '\n');
+            const formattedSummary = summary.replace(/,/g, '\n');
             if (summary) {
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
