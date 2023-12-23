@@ -4,7 +4,7 @@ echo "Preparing summary..."
 
 summary=""
 
-for file in artifacts/*/lock_result.txt; do
+for file in lock_result_*/lock_result.txt; do
   echo "Processing $file..."
 
   lock_result=$(cat "$file")
