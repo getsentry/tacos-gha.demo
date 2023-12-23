@@ -14,4 +14,4 @@ done
 
 summary_base64=$(echo -e "$summary" | base64)
 
-echo -e "summary=$summary_base64"
+echo -e "$summary_base64"
