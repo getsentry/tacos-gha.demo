@@ -9,9 +9,7 @@ for file in lock_result_*/lock_result.txt; do
   # Extract the artifact name, removing the prefix "lock_result_" and replacing '-' with '/'
   artifact_name=$(echo "$file" | sed -e 's/^lock_result_//' -e 's/-/\//g')
 
-  summary+="$artifact_name: $lock_result"$'\n'
+  summary+="$artifact_name: $lock_result,"
 done
 
-summary_base64=$(echo -e "$summary" | base64)
-
-echo "summary=$summary_base64" >> "$GITHUB_OUTPUT"
+echo "lock_summary=$summary" >> "$GITHUB_OUTPUT"
