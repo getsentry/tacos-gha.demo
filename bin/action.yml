@@ -1,0 +1,37 @@
+name: scratch
+description: test custom action
+inputs:
+  tf_version:
+    default: "CALL:1.6.4"
+  tg_version:
+    default: "CALL:0.53.5"
+runs:
+  using: composite
+  steps:
+    - name: ok
+      shell: bash
+      run: echo ok
+
+    - name: show env
+      shell: bash
+      run: |
+        sort -z /proc/self/environ |
+        tr '\0' '\n'
+
+    - name: show full context
+      shell: bash
+      run: |
+        : <<'EOF'
+        github:   ${{ toJSON(github) }},
+        env:      ${{ toJSON(env) }},
+        vars:     ${{ toJSON(vars) }},
+        job:      ${{ toJSON(job) }},
+        jobs:     # for reusable workflows only
+        steps:    ${{ toJSON(steps) }},
+        runner:   ${{ toJSON(runner) }},
+        secrets:  ${{ toJSON(secrets) }},
+        strategy: ${{ toJSON(strategy) }},
+        matrix:   ${{ toJSON(matrix) }},
+        needs:    ${{ toJSON(needs) }},
+        inputs:   ${{ toJSON(inputs) }},
+        EOF
