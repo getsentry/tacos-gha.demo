@@ -48,12 +48,6 @@ def ansi_denoise(ansi_text: bytes):
     return noise_re.sub(b"", ansi_text)
 
 
-def on_error(expect_out, label):
-    if not (message := expect_out.get("buffer")):
-        message = f"error: {label}"
-    raise SystemError(message)
-
-
 parent, child = openpty()
 import os
 
