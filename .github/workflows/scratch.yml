@@ -37,7 +37,11 @@ defaults:
   run:
     # the default default is:
     #      bash --noprofile --norc -eo pipefail {0}
-    shell: bash --noprofile --norc -eo pipefail -ux {0}
+    shell: |-
+      sh -c "
+        : prevent out-of-order interleaving of stdout vs stderr
+        exec bash --noprofile --norc -euxo pipefail "$@" >&2
+      " - {0}
 
 env:
   working_dir: "ENV:./terraform/env"
@@ -46,6 +50,11 @@ env:
 
   # fancy-looking xtrace
   PS4: "+ \e[34;1m$\e[m "
+  # use the PR owner, even if someone else re-triggers the job
+  USER: ${{github.actor}}
+  # a fake hostname to represent the relevant PR
+  HOSTNAME: |-
+    ${{github.event.pull_request.number}}.${{github.event.pull_request.base.repo.name}}.${{github.repository_owner}}.github.invalid
 
 jobs:
   scratch:
@@ -58,10 +67,62 @@ jobs:
         id: ok
         run: echo ok
 
-      - name: show env
+      - name: show unix infos (before)
+        run: |
+          whoami
+          id
+          hostname
+          hostname -f
+          uname --nodename
+          uname --kernel-release
+          uname --kernel-version
+          uname --machine
+          uname --processor
+          uname --hardware-platform
+          uname --operating-system
+          tail -v /etc/hosts
+          sudo find /etc/sudoers* -type f | xargs -tr sudo tail
+
+      - name: "change hostname: ${{env.HOSTNAME}}"
+        run: |
+          sudo hostname "$HOSTNAME"
+          sudo tee <<< "127.0.0.1	$HOSTNAME" -a /etc/hosts
+          hostname -f
+
+      - name: "add user: ${{env.USER}}"
+        run: |
+          : show defaults
+          useradd -D
+          sudo useradd -g "$(id -g)" -G "$(id -G | tr ' ' ,)" "$USER"
+          getent passwd "$USER"
+          sudo getent shadow "$USER"
+          id "$USER"
+
+      - name: show unix infos (after)
+        shell: |-
+          sh -c "
+            : prevent out-of-order interleaving of stdout vs stderr
+            exec >&2
+            sudo -u "$USER" bash --noprofile --norc -euxo pipefail "$@" || : code $?
+          " - {0}
+        run: |
+          whoami
+          id
+          hostname
+          hostname -f
+          uname --nodename
+          uname --kernel-release
+          uname --kernel-version
+          uname --machine
+          uname --processor
+          uname --hardware-platform
+          uname --operating-system
+          tail -v /etc/hosts
+
+      - name: show environ vars
         run: |
           sort -z /proc/self/environ |
-           tr '\0' '\n'
+            tr '\0' '\n'
 
       - name: show full context
         run: |
