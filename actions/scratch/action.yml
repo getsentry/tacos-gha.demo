@@ -18,20 +18,20 @@ runs:
         sort -z /proc/self/environ |
         tr '\0' '\n'
 
-    - name: show full context
-      shell: bash
-      run: |
-        : <<'EOF'
-        github:   ${{ toJSON(github) }},
-        env:      ${{ toJSON(env) }},
-        vars:     ${{ toJSON(vars) }},
-        job:      ${{ toJSON(job) }},
-        jobs:     # for reusable workflows only
-        steps:    ${{ toJSON(steps) }},
-        runner:   ${{ toJSON(runner) }},
-        secrets:  ${{ toJSON(secrets) }},
-        strategy: ${{ toJSON(strategy) }},
-        matrix:   ${{ toJSON(matrix) }},
-        needs:    ${{ toJSON(needs) }},
-        inputs:   ${{ toJSON(inputs) }},
-        EOF
+    # - name: show full context
+    #   shell: bash
+    #   run: |
+    #     : <<'EOF'
+    #     github:   ${{ toJSON(github) }},
+    #     env:      ${{ toJSON(env) }},
+    #     vars:     ${{ toJSON(vars) }},
+    #     job:      ${{ toJSON(job) }},
+    #     jobs:     # for reusable workflows only
+    #     steps:    ${{ toJSON(steps) }},
+    #     runner:   ${{ toJSON(runner) }},
+    #     secrets:  ${{ toJSON(secrets) }},
+    #     strategy: ${{ toJSON(strategy) }},
+    #     matrix:   ${{ toJSON(matrix) }},
+    #     needs:    ${{ toJSON(needs) }},
+    #     inputs:   ${{ toJSON(inputs) }},
+    #     EOF
