@@ -1,26 +1,21 @@
 #!/usr/bin/env python3.10
-import queue
+import asyncio
 from os import getenv
-from pty import openpty
-from queue import Queue
-from subprocess import Popen
-from threading import Thread
-from typing import IO
 
+Command = tuple[str, ...]
 TF_SLEEP = 10  # terraform has a ten-second sleep loop
 TIMEOUT = 1 * TF_SLEEP + 1
-# TIMEOUT = 1
-TERRAFORM = ("terraform", "console")
-cmd: tuple[str, ...]
+TERRAFORM: Command = ("terraform", "console")
 EOF = b""
 
 if getenv("DEBUG"):
+    TIMEOUT = 1
     DEBUG = True
-    cmd = (
+    TERRAFORM = (
         "sh",
         "-exc",
         """\
-sleep 333
+echo 1
 printf "> "
 read -r line
 echo line: "$line"
@@ -28,7 +23,6 @@ echo line: "$line"
     )
 else:
     DEBUG = False
-cmd = TERRAFORM
 
 
 def debug(*msg):
@@ -41,57 +35,77 @@ def debug(*msg):
 def ansi_denoise(ansi_text: bytes):
     import re
 
-    csi = b"\033["
+    csi = b"\033["  # ]  auto-indenter is stupid =.=
     control_re = re.escape(csi) + b"[^A-Za-z]*[A-Za-z]"
     backspace_re = b".\b"
     noise_re = re.compile(b"|".join((backspace_re, control_re)))
     return noise_re.sub(b"", ansi_text)
 
 
-parent, child = openpty()
-import os
-
-proc = Popen(cmd, stdout=child, stdin=child)
-os.close(child)
-
-
-output: Queue[bytes] = Queue()
-
-
-def _io_thread():
-    while True:
-        data = os.read(parent, 32)  # could block forever
-        debug("DATA:", repr(data))
-        output.put(data)
-        if data == EOF:
-            break
+async def get_prompt(output: asyncio.StreamReader) -> str:
+    while not output.at_eof():
+        data = await output.read(32)
+        prompt = ansi_denoise(data)
+        if prompt:
+            return prompt.decode("UTF-8")
+    return ""
 
 
-io_thread = Thread(target=_io_thread, args=(), daemon=True)
-io_thread.start()
+async def run_terraform(cmd: Command):
+    import os
+
+    parent, child = os.openpty()
+
+    import tty
+
+    tty.setraw(parent)
+
+    proc = await asyncio.create_subprocess_exec(*cmd, stdout=child, stdin=child)
+    os.close(child)
+
+    loop = asyncio.get_running_loop()
+    output = asyncio.StreamReader(loop=loop)
+
+    await loop.connect_read_pipe(
+        lambda: asyncio.StreamReaderProtocol(output, loop=loop),
+        os.fdopen(parent, "rb", buffering=0),
+    )
+    return proc, output
 
 
-data = None
-result: str | queue.Empty = ""
-while data != EOF and not result:
-    try:
-        data = output.get(timeout=TIMEOUT)
-    except queue.Empty as error:
+async def tf_lock_acquire() -> None:
+    proc, output = await run_terraform(TERRAFORM)
+    wait = asyncio.create_task(proc.wait())
+    prompt = asyncio.create_task(get_prompt(output))
+
+    await asyncio.wait(
+        [wait, prompt],
+        return_when=asyncio.FIRST_COMPLETED,
+        timeout=TIMEOUT,
+    )
+    if wait.done():
+        returncode = wait.result()
+        debug("terraform exitted early, code", returncode)
+        raise SystemExit(returncode)
+    elif not prompt.done():
+        proc.kill()
         debug("timeout (seconds):", TIMEOUT)
-        result = error
-    else:
-        result = ansi_denoise(data).decode("UTF-8")
-
-if data == EOF:
-    debug("terraform exitted, code", proc.wait())
-    io_thread.join()
-    raise SystemExit(proc.poll())
-else:
-    if result == "> ":
+    elif (result := prompt.result()) == "> ":
         debug("got prompt, exit un-gracefully")
+        assert not wait.done(), wait
+        proc.kill()
+        debug("terraform exitted, code", await proc.wait())
+
     else:
         debug("unexpected output:", repr(result))
 
-    proc.kill()
-    debug("terraform exitted, code", proc.wait())
-    io_thread.join()
+
+def main():
+    import logging
+
+    logging.basicConfig(level=logging.DEBUG if DEBUG else logging.INFO)
+    asyncio.run(tf_lock_acquire(), debug=DEBUG)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
