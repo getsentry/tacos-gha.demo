@@ -7,9 +7,9 @@ lock_id=$("$HERE/"tf-lock-id "$root_module") && status=$? || status=$?
 
 cd "$root_module"
 if (( status == 2 )); then
-  "$HERE/"lib/tf-lock-acquire.exp  # acquire
+  "$HERE/"lib/tf-lock-acquire.expect.tcl  # acquire
   # second acquire should fail, and print the lock id
-  if "$HERE/"lib/tf-lock-acquire.exp; then
+  if "$HERE/"lib/tf-lock-acquire.expect.tcl; then
     echo >&2 lock not obtained!
     exit 1
   fi
