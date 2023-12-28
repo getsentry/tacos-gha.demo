@@ -54,28 +54,4 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - name: ok
-        id: ok
-        run: echo ok
-
-      - name: show env
-        run: |
-          sort -z /proc/self/environ |
-           tr '\0' '\n'
-
-      - name: show full context
-        run: |
-          : <<'EOF'
-          github:   ${{ toJSON(github) }},
-          env:      ${{ toJSON(env) }},
-          vars:     ${{ toJSON(vars) }},
-          job:      ${{ toJSON(job) }},
-          jobs:     # for reusable workflows only
-          steps:    ${{ toJSON(steps) }},
-          runner:   ${{ toJSON(runner) }},
-          secrets:  ${{ toJSON(secrets) }},
-          strategy: ${{ toJSON(strategy) }},
-          matrix:   ${{ toJSON(matrix) }},
-          needs:    ${{ toJSON(needs) }},
-          inputs:   ${{ toJSON(inputs) }},
-          EOF
+      - uses: actions/checkout@v4
