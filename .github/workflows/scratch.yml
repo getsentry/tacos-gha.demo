@@ -56,4 +56,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: test
-        uses: ./actions/scratch@v1
+        uses: ./actions/scratch
