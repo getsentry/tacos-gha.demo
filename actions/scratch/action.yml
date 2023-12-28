@@ -30,6 +30,5 @@ runs:
         runner:   ${{ toJSON(runner) }},
         strategy: ${{ toJSON(strategy) }},
         matrix:   ${{ toJSON(matrix) }},
-        needs:    ${{ toJSON(needs) }},
         inputs:   ${{ toJSON(inputs) }},
         EOF
