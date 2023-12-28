@@ -55,3 +55,5 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
+      - id: test
+        uses: actions/scratch@v1
