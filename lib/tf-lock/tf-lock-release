@@ -1,16 +1,80 @@
-#!/bin/bash
-set -eo pipefail
-HERE="$(cd "$(dirname "$0")"; pwd)"
+#!/usr/bin/env python3.10
+from pathlib import Path
+from typing import Mapping
 
-lock_id=$("$HERE/"tf-lock-id) && status=$? || status=$?
+HERE = Path(__file__).parent.absolute()
+Environ = Mapping[str, str]
 
-if (( status == 0 )); then
-  terraform force-unlock -force -- "$lock_id" >&2
-elif (( status == 2 )); then
-  echo >&2 "(terraform state not locked)"
-  exit 0
-else
-  # surface any unexpected errors
-  cat >&2 <<< "$lock_id"
-  exit "$status"
-fi
+
+class UserError(SystemExit):
+    pass
+
+
+def get_current_user(env):
+    for var in ("USER", "LOGNAME"):
+        if var in env:
+            return env[var]
+    else:
+        import getpass
+
+        return getpass.getuser()
+
+
+def get_current_host(env):
+    for var in ("HOST", "HOSTNAME"):
+        if var in env:
+            return env[var]
+    else:
+        import socket
+
+        return socket.gethostname()
+
+
+def get_lock_info(root_module: Path):
+    from json import loads
+    from subprocess import check_output
+
+    return loads(check_output((HERE / "tf-lock-info", str(root_module))))
+
+
+def tf_lock_release(root_module: Path, env: Environ):
+    lock_info = get_lock_info(root_module)
+    if not lock_info["lock"]:
+        return  # already done!
+
+    tf_user = f"{get_current_user(env)}@{get_current_host(env)}"
+    lock_user = lock_info["Who"]
+    if tf_user == lock_user:
+        from subprocess import check_call
+
+        return check_call(
+            ("terraform", "force-unlock", "-force", "--", lock_info["Id"]),
+            stdout=2,
+            cwd=root_module,
+        )
+    else:
+        raise UserError(
+            f"""\
+refusing unlock: lock is held by {lock_user} (not {tf_user})
+(hint: set $USER and/or $HOST to explicitly override)
+"""
+        )
+
+
+def main():
+    from sys import argv
+
+    args = argv[1:]
+    if args:
+        paths = [Path(arg) for arg in args]
+    else:
+        paths = [Path.cwd()]
+
+    from os import environ
+
+    for path in paths:
+        tf_lock_release(path, env=environ.copy())
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
