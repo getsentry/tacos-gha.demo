@@ -39,7 +39,7 @@ export credential_access_token
 eval "$(
   unset CLOUDSDK_CORE_ACCOUNT
   unset CLOUDSDK_AUTH_ACCESS_TOKEN
-  gcloud config config-helper \
+  gcloud config config-helper < /dev/tty \
     --format 'config[export](configuration.properties.core.account,credential.access_token)' \
     ;
 )"
