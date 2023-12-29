@@ -194,3 +194,30 @@ class TestDependentSlices:
                 "env/prod/slice-0",
             ),
         )
+
+
+class TestRegressions:
+    """Real-world cases that (initially) weren't caught by unit-tests."""
+
+    def test_root_is_slice(self):
+        modified = {
+            D.Path("proj/control/_import.tf"),
+            D.Path("proj/service.hcl"),
+        }
+        all = modified | {D.Path("terragrunt.hcl")}
+        all = D.FileSystem.from_paths(all)
+        categorized = D.TFCategorized.from_fs(D.FileSystem.from_paths(modified), all)
+        assert categorized == D.TFCategorized(
+            slices=frozenset(
+                {D.TopLevelTFModule(D.TFModule(D.Dir(D.Path("proj/control"))))}
+            ),
+            shared_dirs=frozenset(),
+            config_files=frozenset(
+                {D.TFConfigFile(D.File(D.Path("proj/service.hcl")))}
+            ),
+        )
+        assert categorized.config_deps() == {
+            D.Path("proj"): frozenset({D.Path("proj/control")})
+        }
+        slices = tuple(D.dependent_slices(modified, all))
+        assert slices == (D.Path("proj/control"),)
