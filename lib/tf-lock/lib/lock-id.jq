@@ -1,4 +1,4 @@
-#!/usr/bin/env jq -rf
+#!/usr/bin/env -S jq -rf
 if .ID != null
 then .ID
 else
