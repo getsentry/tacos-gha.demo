@@ -65,4 +65,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: scratch
-        uses: ./actions/scratch
+        uses: getsentry/tacos-gha/scratch@v1.0
