@@ -1,4 +1,4 @@
-#!/usr/bin/env sed -nrf
+#!/usr/bin/env -S sed -nrf
 1,/^Lock Info:$/ d
 
 s/^  /"/

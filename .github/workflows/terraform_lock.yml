@@ -80,6 +80,9 @@ jobs:
       - name: Checkout our scripts
         uses: actions/checkout@v3
 
+      # see ./.python-version
+      - uses: actions/setup-python@v5
+
       - name: set workload identity provider
         id: set-workload-identity-provider
         run: ./lib/ci/set-workload-identity-provider "$deploy_environ"
@@ -100,9 +103,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_wrapper: false
-
-      - name: Install expect
-        run: ./lib/ci/install-expect
 
       - name: Obtain the lock
         id: lock_check
