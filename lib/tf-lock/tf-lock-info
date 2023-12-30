@@ -8,8 +8,8 @@ if [[ "${DEBUG:-}" ]]; then
   set -x
 fi
 
-cd "$root_module"
 fancy_error="$(
+  cd "$root_module"
   # swap stdout and stderr:
   terraform force-unlock -force -- -1 3>&2 2>&1 1>&3 <<< ""
 )" && status=$? || status=$?
@@ -30,7 +30,10 @@ elif grep -Eq <<< "$error" \
 elif grep -Eq <<< "$error" \
   'Error: .*Backend initialization required, please run "terraform init"' \
 ; then
-  terraform init >&2
+  ( # NB: need to undo the cd to keep relative paths valid
+    cd "$root_module"
+    terraform init >&2
+  )
   exec "$0" "$@"
 else
   cat >&2 <<< "$fancy_error"
