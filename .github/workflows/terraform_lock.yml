@@ -49,9 +49,6 @@ jobs:
       - name: Checkout our scripts
         uses: actions/checkout@v4
 
-      # see ./.python-version
-      - uses: actions/setup-python@v5
-
       - id: slices
         run: |
           ( echo -n slices=

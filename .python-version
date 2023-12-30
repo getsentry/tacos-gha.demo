@@ -1,1 +1,2 @@
-3.12
+# to match the default GHA version
+3.10

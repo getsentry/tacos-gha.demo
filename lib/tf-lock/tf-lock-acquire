@@ -13,7 +13,7 @@ lock_id=$(
 
 if (( status == 2 )); then
   ( cd "$root_module"
-    if ! "$HERE/"lib/tf-lock-acquire.exp; then
+    if ! "$HERE/"lib/tf_lock_acquire.py; then
       echo >&2 lock not obtained!
       exit 1
     fi
