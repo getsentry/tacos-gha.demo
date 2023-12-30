@@ -48,9 +48,9 @@ class FileSystem:
 
         for path in paths:
             if path.is_dir():
-                dirs.add(Dir(path))
+                dirs.add(Dir(PurePath(path)))
             else:
-                file = File(path)
+                file = File(PurePath(path))
                 files.add(file)
                 dirs.add(parent(file))
 
@@ -98,7 +98,7 @@ def paths_containing(path: PurePath) -> Generator[PurePath]:
 
 
 def dir_contains(dir: Dir, path: PurePath) -> bool:
-    """inclusive"""
+    """ancestor, inclusive"""
     return dir == path or dir in path.parents
 
 
@@ -147,11 +147,16 @@ class TFCategorized:
                 else:
                     slices.add(TopLevelTFModule(module))
 
-        dirs: frozenset[Dir] = frozenset().union(slices, shared_dirs)
+        seen_dirs: frozenset[Dir] = frozenset(slices).union(shared_dirs)
         for file in subject.files:
             if config := is_tf_config(file):
-                if not any(dir_contains(dir, config) for dir in dirs):
-                    config_files.add(config)
+                # we already track slices
+                if any(config.parent == slice for slice in slices):
+                    continue
+                # we already track shared dirs
+                if any(dir_contains(shared_dir, config) for shared_dir in shared_dirs):
+                    continue
+                config_files.add(config)
 
         return cls(
             frozenset(slices),
@@ -217,7 +222,10 @@ def dependent_slices(
 
 def lines_to_paths(lines: Iterable[str]) -> Generator[Path]:
     for line in lines:
-        yield Path(line.strip())
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        yield Path(line)
 
 
 def main() -> int:
