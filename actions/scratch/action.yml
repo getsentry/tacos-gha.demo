@@ -18,6 +18,9 @@ runs:
         sort -z /proc/self/environ |
         tr '\0' '\n'
 
+    # removed vars, secrets, needs
+    # they were causing issues as custom actions doesn't
+    # recognize them.
     - name: show full context
       shell: bash
       run: |

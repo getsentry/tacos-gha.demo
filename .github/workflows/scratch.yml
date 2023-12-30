@@ -64,6 +64,5 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - id: test
+      - id: scratch
         uses: ./actions/scratch
-
