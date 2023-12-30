@@ -101,9 +101,6 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Install expect
-        run: ./lib/ci/install-expect
-
       - name: Obtain the lock
         id: lock_check
         run: ./lib/ci/obtain-lock '${{matrix.tf-root-module}}' >> $GITHUB_OUTPUT
