@@ -24,6 +24,9 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # see ./.python-version
+      - uses: actions/setup-python@v5
+
       - name: Release Terraform lock
         run: ./lib/ci/release-lock
 
