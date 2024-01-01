@@ -1,2 +1,6 @@
 # there's no tool that can use this "lock file"
 Brewfile.lock.json
+
+# Ignore generated credentials from google-github-actions/auth
+# https://github.com/google-github-actions/auth#prerequisites
+gha-creds-*.json

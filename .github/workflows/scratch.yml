@@ -35,26 +35,12 @@ on:
 
 defaults:
   run:
-    # the default default is:
-    #      bash --noprofile --norc -eo pipefail {0}
-    shell: |-
-      sh -c "
-        : prevent out-of-order interleaving of stdout vs stderr
-        exec bash --noprofile --norc -euxo pipefail "$@" >&2
-      " - {0}
+    shell: env ./lib/ci/default-shell {0}
 
 env:
   working_dir: "ENV:./terraform/env"
   tf_version: "ENV:1.6.4"
   tg_version: "ENV:0.53.5"
-
-  # fancy-looking xtrace
-  PS4: "+ \e[34;1m$\e[m "
-  # use the PR owner, even if someone else re-triggers the job
-  USER: ${{github.actor}}
-  # a fake hostname to represent the relevant PR
-  HOSTNAME: |-
-    ${{github.event.pull_request.number}}.${{github.event.pull_request.base.repo.name}}.${{github.repository_owner}}.github.invalid
 
 jobs:
   scratch:
@@ -64,5 +50,17 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - id: scratch
-        uses: ./actions/scratch
+      - name: show env (orig)
+        shell: bash
+        run: |
+          sort -z /proc/self/environ |
+            tr '\0\n' '\n;' |
+            tee orig.env
+
+      - name: Scratch
+        uses: ./.github/actions/scratch
+      - name: basic info (main job)
+        run: |
+          echo "$USER@$HOSTNAME"
+          id
+          hostname -f
