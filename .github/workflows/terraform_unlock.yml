@@ -15,6 +15,7 @@ env:
   working_dir: "."
   deploy_environ: "dev"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GETSENTRY_SAC_VERB: apply
 
 jobs:
   terraform_unlock:
