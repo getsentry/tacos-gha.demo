@@ -9,6 +9,12 @@ for file in lock_result_*/lock_result.txt; do
   # Extract the artifact name, removing the prefix "lock_result_" and replacing '-' with '/'
   artifact_name=$(echo "$file" | sed -e 's/^lock_result_//' -e 's/-/\//g')
 
+  # Add a locked emoji if the artifact is locked
+  if [[ "$lock_result" == "true" ]]; then
+    lock_result="✅🔒"
+  else
+    lock_result="❌"
+  fi
   summary+="$artifact_name: $lock_result,"
 done
 
