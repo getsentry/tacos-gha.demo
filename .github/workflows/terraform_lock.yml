@@ -20,3 +20,5 @@ env:
 jobs:
   lock:
     uses: getsentry/tacos-gha/.github/workflows/terraform_lock.yml@bukzor/import-workflows
+    with:
+      tacos_gha_ref: refs/heads/bukzor/import-workflows
