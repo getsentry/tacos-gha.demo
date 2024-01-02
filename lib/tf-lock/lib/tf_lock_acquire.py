@@ -44,7 +44,13 @@ def ansi_denoise(ansi_text: bytes):
 
 async def get_prompt(output: asyncio.StreamReader) -> str:
     while not output.at_eof():
-        data = await output.read(32)
+        try:
+            data = await output.read(32)
+        except OSError as error:
+            if error.errno == 5:  # input/output error, i.e. a broken pipe
+                break
+            else:
+                raise
         prompt = ansi_denoise(data)
         if prompt:
             return prompt.decode("UTF-8")
