@@ -105,7 +105,7 @@ jobs:
 
   summary:
     name: "Summarize lock state."
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false && always()
     needs:
       - terraform_lock
 
