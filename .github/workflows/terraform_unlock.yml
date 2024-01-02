@@ -86,10 +86,11 @@ jobs:
       - name: Release Terraform lock
         run: |
           # release all tfstate locks currently held
+          # FIXME: surface unexpected unlock failures
           ./lib/terragrunt/slices |
             xargs ./lib/github/log-as-step-summary \
               sudo-sac ./lib/tf-lock/tf-lock-release \
-            \
+            || : unlock failed \
           ;
 
       - name: Reset label
