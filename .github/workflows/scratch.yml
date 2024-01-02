@@ -44,23 +44,4 @@ env:
 
 jobs:
   scratch:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-      - name: show env (orig)
-        shell: bash
-        run: |
-          sort -z /proc/self/environ |
-            tr '\0\n' '\n;' |
-            tee orig.env
-
-      - name: Scratch
-        uses: ./.github/actions/scratch
-      - name: basic info (main job)
-        run: |
-          echo "$USER@$HOSTNAME"
-          id
-          hostname -f
+    uses: getsentry/tacos-gha/.github/workflows/scratch.yml@bukzor/import-workflows
