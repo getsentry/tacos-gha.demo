@@ -3,7 +3,7 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")"; pwd)"
 
-gh pr view 535 --json comments |
+gh pr view --json comments |
   jq --raw-output '
   ( .comments
   | map(
