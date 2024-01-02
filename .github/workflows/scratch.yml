@@ -44,4 +44,4 @@ env:
 
 jobs:
   scratch:
-    uses: getsentry/tacos-gha/.github/workflows/scratch.yml@bukzor/import-workflows
+    uses: getsentry/tacos-gha/.github/workflows/scritch.yml@bukzor/import-workflows
