@@ -135,6 +135,7 @@ jobs:
         run: ./lib/ci/prepare-summary
 
       - name: Comment summary
+        if: always()
         uses: actions/github-script@v7
         with:
           github-token: ${{ env.GITHUB_TOKEN }}
