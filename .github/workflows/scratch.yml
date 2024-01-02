@@ -35,17 +35,12 @@ on:
 
 defaults:
   run:
-    # the default default is:
-    #      bash --noprofile --norc -eo pipefail {0}
-    shell: bash --noprofile --norc -eo pipefail -ux {0}
+    shell: env ./lib/ci/default-shell {0}
 
 env:
   working_dir: "ENV:./terraform/env"
   tf_version: "ENV:1.6.4"
   tg_version: "ENV:0.53.5"
-
-  # fancy-looking xtrace
-  PS4: "+ \e[34;1m$\e[m "
 
 jobs:
   scratch:
@@ -54,28 +49,18 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - name: ok
-        id: ok
-        run: echo ok
-
-      - name: show env
+      - uses: actions/checkout@v4
+      - name: show env (orig)
+        shell: bash
         run: |
           sort -z /proc/self/environ |
-           tr '\0' '\n'
+            tr '\0\n' '\n;' |
+            tee orig.env
 
-      - name: show full context
+      - name: Scratch
+        uses: ./.github/actions/scratch
+      - name: basic info (main job)
         run: |
-          : <<'EOF'
-          github:   ${{ toJSON(github) }},
-          env:      ${{ toJSON(env) }},
-          vars:     ${{ toJSON(vars) }},
-          job:      ${{ toJSON(job) }},
-          jobs:     # for reusable workflows only
-          steps:    ${{ toJSON(steps) }},
-          runner:   ${{ toJSON(runner) }},
-          secrets:  ${{ toJSON(secrets) }},
-          strategy: ${{ toJSON(strategy) }},
-          matrix:   ${{ toJSON(matrix) }},
-          needs:    ${{ toJSON(needs) }},
-          inputs:   ${{ toJSON(inputs) }},
-          EOF
+          echo "$USER@$HOSTNAME"
+          id
+          hostname -f

@@ -34,21 +34,27 @@ scopes='[
 info() { echo >&2 "$@";  }
 error() { info "$@"; exit 1; }
 
+if [[ "${DEBUG:-}" ]]; then
+  set -x
+fi
+
 export configuration_properties_core_account
 export credential_access_token
 eval "$(
   unset CLOUDSDK_CORE_ACCOUNT
   unset CLOUDSDK_AUTH_ACCESS_TOKEN
+  # enable interactive reauth, iff we have a controlling tty
+  if ( : < /dev/tty ) 2>/dev/null; then exec < /dev/tty; fi
   gcloud config config-helper \
     --format 'config[export](configuration.properties.core.account,credential.access_token)' \
-    ;
+  ;
 )"
-origin_identity="$configuration_properties_core_account"
+origin_identity="${configuration_properties_core_account:-}"
 token="$credential_access_token"
 target_identity="${target_identity:-$origin_identity}"
 
-if ! [[ "$origin_identity" =~ @sentry\.io$ ]]; then
-  info "Please use \`gcloud login\` with your @sentry.io username."
+if ! [[ "$origin_identity" =~ @ ]]; then
+  info "Please authenticate by running: gcloud login"
   exit 1
 fi
 
