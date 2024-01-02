@@ -89,8 +89,12 @@ jobs:
           # FIXME: surface unexpected unlock failures
           ./lib/terragrunt/slices |
             xargs ./lib/github/log-as-step-summary \
-              sudo-sac ./lib/tf-lock/tf-lock-release \
-            || : unlock failed \
+              sudo-sac sh -c '
+                for slice in "$@"; do
+                  ./lib/tf-lock/tf-lock-release "$slice" || : unlock failed
+                done
+              ' \
+            \
           ;
 
       - name: Reset label
