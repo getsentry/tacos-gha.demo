@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+defaults:
+  run:
+    shell: env ./lib/ci/default-shell {0}
+
 env:
   # NOTE: please keep these in sync with ../../.terra*-version
   tf_version: "1.6.4"
@@ -11,11 +15,6 @@ env:
   working_dir: "."
   deploy_environ: "dev"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # TODO: use action/direnv to keep these centralized and in sync with manual
-  # behavior
-  TERRAGRUNT_INCLUDE_MODULE_PREFIX: true
-  TF_CLI_ARGS_plan: "-lock=false -out=plan"
 
 jobs:
   terraform_plan:
@@ -25,14 +24,14 @@ jobs:
       id-token: write
       pull-requests: write
     steps:
+      - uses: actions/checkout@v4
+      - uses: HatsuneMiku3939/direnv-action@v1
+
       - name: show event
         run: |
           : <<'EOF'
             ${{toJSON(github.event)}}
           EOF
-
-      - name: Checkout
-        uses: actions/checkout@v3
 
       - name: set workload identity provider
         id: set-workload-identity-provider

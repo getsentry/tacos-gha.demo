@@ -5,16 +5,15 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
+defaults:
+  run:
+    shell: env ./lib/ci/default-shell {0}
+
 env:
   # NOTE: please keep these in sync with ../../.terra*-version
   tf_version: "1.6.4"
   tg_version: "0.53.5"
   working_dir: "."
-
-  # TODO: use action/direnv to keep these centralized and in sync with manual
-  # behavior
-  TERRAGRUNT_INCLUDE_MODULE_PREFIX: true
-  TF_CLI_ARGS_plan: "-lock=false -out=plan"
 
 # Cancel in progress workflows on pull_requests.
 # https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
@@ -26,22 +25,21 @@ jobs:
   terraform_detect_drift:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: HatsuneMiku3939/direnv-action@v1
+
       - name: show event
         run: |
           : <<'EOF'
             ${{toJSON(github.event)}}
           EOF
 
-      - name: Checkout
-        uses: actions/checkout@v3
-
       # We don't want to run this job if someone has already obtained the lock
       - name: Obtain the lock
         id: obtain_lock
-        run: ./lib/ci/obtain-lock >> $GITHUB_OUTPUT
+        run: ./lib/ci/obtain-lock
 
       - name: Plan
-        if: steps.obtain_lock.output.lock_obtained == 'true'
         uses: gruntwork-io/terragrunt-action@v2
         continue-on-error: true
         id: plan

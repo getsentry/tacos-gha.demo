@@ -3,13 +3,10 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")"; pwd)"
 
-echo -n lock_id=
-"$HERE/"../tf-lock/tf-lock "$@"
-status=$?
-
-if [ $status -eq 0 ]; then
-  echo "lock_obtained=true"
+if "$HERE/"set-output lock_id "$HERE/"../tf-lock/tf-lock-acquire "$@"; then
+  "$HERE/"set-output lock_obtained echo false
 else
-  echo "lock_obtained=false"
-  exit 1
+  status="$?"
+  "$HERE/"set-output lock_obtained echo false
+  exit "$status"
 fi

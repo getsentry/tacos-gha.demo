@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+defaults:
+  run:
+    shell: env ./lib/ci/default-shell {0}
+
 env:
   # NOTE: please keep these in sync with ../../.terra*-version
   tf_version: "1.6.4"
@@ -11,18 +15,7 @@ env:
   working_dir: "."
   deploy_environ: "dev"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # TODO: use action/direnv to keep these centralized and in sync with manual
-  # behavior
-  TERRAGRUNT_INCLUDE_MODULE_PREFIX: true
-  TF_CLI_ARGS_plan: "-lock=false -out=plan"
-
-defaults:
-  run:
-    # enable xtrace and nounset by default
-    # the default default is:
-    #      bash --noprofile --norc -eo pipefail {0}
-    shell: bash --noprofile --norc -eo pipefail -ux {0}
+  GETSENTRY_SAC_VERB: apply
 
 jobs:
   determine-tf-root-modules:
@@ -34,6 +27,9 @@ jobs:
       slices: ${{ steps.slices.outputs.slices }}
 
     steps:
+      - uses: actions/checkout@v4
+      - uses: HatsuneMiku3939/direnv-action@v1
+
       - name: show event
         run: |
           : <<'EOF'
@@ -45,9 +41,6 @@ jobs:
         with:
           filters: "all: ['**']"
           list-files: json
-
-      - name: Checkout our scripts
-        uses: actions/checkout@v4
 
       # see ./.python-version
       - uses: actions/setup-python@v5
@@ -77,8 +70,11 @@ jobs:
           ${{ fromJSON(needs.determine-tf-root-modules.outputs.slices) }}
 
     steps:
-      - name: Checkout our scripts
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: HatsuneMiku3939/direnv-action@v1
+
+      # see ./.python-version
+      - uses: actions/setup-python@v5
 
       - name: set workload identity provider
         id: set-workload-identity-provider
@@ -101,18 +97,45 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Install expect
-        run: ./lib/ci/install-expect
+      - name: tell TF username and PR
+        uses: ./.github/actions/set-username-and-hostname
 
       - name: Obtain the lock
-        id: lock_check
-        run: ./lib/ci/obtain-lock '${{matrix.tf-root-module}}' >> $GITHUB_OUTPUT
+        id: lock
+        run: ./lib/ci/obtain-lock '${{matrix.tf-root-module}}'
 
-      - name: Comment on PR whether lock is obtained
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const lockObtained = "${{ steps.lock_check.outputs.lock_obtained }}" === "true"
-            const script = require('./src/lock-acquisition-comment.js')
-            console.log(script({github, context, lockObtained}))
+  summary:
+    name: "Summarize lock state."
+    if: github.event.pull_request.draft == false && always()
+    needs:
+      - terraform_lock
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: show full context
+        run: |
+          : <<'EOF'
+          github:   ${{ toJSON(github) }},
+          env:      ${{ toJSON(env) }},
+          vars:     ${{ toJSON(vars) }},
+          job:      ${{ toJSON(job) }},
+          jobs:     # for reusable workflows only
+          steps:    ${{ toJSON(steps) }},
+          runner:   ${{ toJSON(runner) }},
+          secrets:  ${{ toJSON(secrets) }},
+          strategy: ${{ toJSON(strategy) }},
+          matrix:   ${{ toJSON(matrix) }},
+          needs:    ${{ toJSON(needs) }},
+          inputs:   ${{ toJSON(inputs) }},
+          EOF
+
+      ###- name: Comment on PR whether lock is obtained
+      ###  if: always()
+      ###  uses: actions/github-script@v7
+      ###  with:
+      ###    script: |
+      ###      const lockObtained = "${{ steps.lock.outputs.lock_obtained }}" === "true"
+      ###      const script = require('./src/lock-acquisition-comment.js')
+      ###      console.log(script({github, context, lockObtained}))

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.10
+#!/usr/bin/env python3.12
 from pathlib import Path
 from typing import Mapping
 
@@ -6,8 +6,33 @@ HERE = Path(__file__).parent.absolute()
 Environ = Mapping[str, str]
 
 
+def info(msg):
+    from sys import stderr
+
+    print(msg, file=stderr, flush=True)
+
+
 class UserError(SystemExit):
-    pass
+    def __init__(self, message, *, code=None):
+        if code is None:
+            code = 1
+        super().__init__(code)
+        self.message = message
+        self.args = (message,)
+
+    @classmethod
+    def handler(cls, func):
+        from functools import wraps
+
+        @wraps(func)
+        def wrapped(*args, **kwargs):
+            try:
+                func(*args, **kwargs)
+            except cls as error:
+                info(error.message)
+                raise
+
+        return wrapped
 
 
 def get_current_user(env):
@@ -40,27 +65,33 @@ def get_lock_info(root_module: Path):
 def tf_lock_release(root_module: Path, env: Environ):
     lock_info = get_lock_info(root_module)
     if not lock_info["lock"]:
-        return  # already done!
+        info(f"success: already unlocked: {root_module}")
+        return
 
     tf_user = f"{get_current_user(env)}@{get_current_host(env)}"
     lock_user = lock_info["Who"]
     if tf_user == lock_user:
         from subprocess import check_call
 
-        return check_call(
-            ("terraform", "force-unlock", "-force", "--", lock_info["Id"]),
+        check_call(
+            ("terraform", "force-unlock", "-force", "--", lock_info["ID"]),
             stdout=2,
             cwd=root_module,
         )
+
+        info(f"success: released lock (from {lock_user}): {root_module}")
+
     else:
         raise UserError(
             f"""\
 refusing unlock: lock is held by {lock_user} (not {tf_user})
-(hint: set $USER and/or $HOST to explicitly override)
-"""
+(hint: to override, set $USER and/or $HOST explicitly)
+""",
+            code=3,
         )
 
 
+@UserError.handler
 def main():
     from sys import argv
 
