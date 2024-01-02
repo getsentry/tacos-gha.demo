@@ -50,4 +50,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: scratch
-        uses: getsentry/tacos-gha/actions/scratch@v1.0
+        uses: getsentry/tacos-gha/.github/actions/scratch@v1.0
