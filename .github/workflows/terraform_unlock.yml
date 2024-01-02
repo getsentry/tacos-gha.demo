@@ -15,6 +15,7 @@ env:
   working_dir: "."
   deploy_environ: "dev"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GETSENTRY_SAC_VERB: apply
 
 jobs:
   terraform_unlock:
@@ -85,9 +86,14 @@ jobs:
       - name: Release Terraform lock
         run: |
           # release all tfstate locks currently held
+          # FIXME: surface unexpected unlock failures
           ./lib/terragrunt/slices |
             xargs ./lib/github/log-as-step-summary \
-              sudo-sac ./lib/tf-lock/tf-lock-release \
+              sudo-sac sh -c '
+                for slice in "$@"; do
+                  ./lib/tf-lock/tf-lock-release "$slice" || : unlock failed
+                done
+              ' \
             \
           ;
 

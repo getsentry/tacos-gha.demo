@@ -1,3 +1,1 @@
-#!/bin/bash
-sac_terraformer="$(sac-terraformer)"
-sudo-gcp -u "$sac_terraformer" "$@"
+../lib/getsentry-sac/sudo

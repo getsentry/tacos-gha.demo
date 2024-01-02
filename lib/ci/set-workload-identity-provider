@@ -1,13 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
-deploy_environ="$1"
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")"; pwd)"
 
-if [ "$deploy_environ" = "dev" ]; then
-  PROVIDER="projects/307284466893/locations/global/workloadIdentityPools/dev-github/providers/github-oidc-pool"
-elif [ "$deploy_environ" = "prod" ]; then
-  PROVIDER="projects/868781662168/locations/global/workloadIdentityPools/prod-github/providers/github-oidc-pool"
-else
-  echo -e "deploy_environ input must be one of 'dev' or 'prod'!\nAlternatively, you can set workload_identity_provider to override the setting completely."
-  exit 1
-fi
-echo "workload_identity_provider=$PROVIDER" >> "$GITHUB_OUTPUT"
+exec "$HERE/"set-output workload_identity_provider "$REPO_TOP/"lib/getsentry-sac/oidc-provider "$@"
