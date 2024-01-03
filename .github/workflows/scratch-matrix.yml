@@ -46,7 +46,7 @@ jobs:
       steps: ${{ toJSON(steps) }}
     strategy:
       matrix:
-        data: |
+        data: |-
           ${{
             fromJSON(
               fromJSON(
