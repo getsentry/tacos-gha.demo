@@ -19,6 +19,8 @@ jobs:
 
   matrix-processing:
     runs-on: ubuntu-latest
+    needs:
+      - input-data
     strategy:
       matrix:
         data: ${{ fromJSON(needs.input-data.outputs) }}
