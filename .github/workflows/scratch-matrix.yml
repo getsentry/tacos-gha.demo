@@ -73,16 +73,14 @@ jobs:
           ;
 
           mkdir matrix-output
-          jq -c >matrix-output/${{matrix.data}}.json <<EOF
-            { "matrix": {
-              "${{matrix.data}}": "$output"
-            } }
+          jq -c > matrix-output/${{matrix.data}}.json <<EOF
+            { "${{matrix.data}}": "$output" }
           EOF
 
       - id: put-output
         uses: actions/upload-artifact@v4
         with:
-          name: matrix-output.${{matrix.data}}
+          name: matrix-output/${{matrix.data}}.json
           path: matrix-output
 
   show-ouputs:
@@ -94,7 +92,8 @@ jobs:
         name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: matrix-output.*
+          merge-multiple: true
+          pattern: matrix-output/*
           path: matrix-output
 
       - run: |
@@ -108,4 +107,11 @@ jobs:
           needs.matrix-processing.outputs.steps:
             ${{ needs.matrix-processing.outputs.steps }}
           ```
+
+          printf 'matrix-output=' >> "$GITHUB_OUTPUT"
+          jq -cs add matrix-output/*.json |
+            tee -a "$GITHUB_OUTPUT" |
+            jq . |
+            tee -a "$GITHUB_SUMMARY" \
+          ;
           EOF
