@@ -1,0 +1,28 @@
+on:
+  workflow_dispatch: null
+  pull_request:
+    paths:
+      - "**/scratch-matrix.yml"
+
+defaults:
+  run:
+    shell: bash -euxo pipefail {0}
+
+jobs:
+  input-data:
+    steps:
+      - name: set-output
+        run: |
+          printf "input-data=" >> "$GITHUB_OUTPUT"
+          seq 5 | jq -R | jq -cs >> "$GITHUB_OUTPUT"
+
+  matrix-processing:
+    strategy:
+      matrix:
+        data: ${{ fromJSON(needs.input-data.outputs) }}
+
+    steps:
+      - run: |
+          : Processing...
+          echo ${{matrix.data}}
+          printf "x%s=%s" "$RANDOM" "$RANDOM" >> "$GITHUB_OUTPUT"
