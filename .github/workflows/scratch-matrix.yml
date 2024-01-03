@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       steps: ${{ toJSON(steps) }}
-      input-data4: ${{ toJSON(steps.input-data2.outputs.input-data4) }}
+      input-data4: ${{ steps.input-data2.outputs.input-data3 }}
     steps:
       - id: input-data2
         run: |
@@ -27,7 +27,25 @@ jobs:
     steps:
       - run: |
           set +x; cat >>"$GITHUB_STEP_SUMMARY" <<'EOF'
+          ```
+          needs:
             ${{ toJSON(needs) }}
+
+          needs.input-data1:
+            ${{ toJSON(needs.input-data1) }}
+
+          needs['input-data1']:
+            ${{ toJSON(needs['input-data1']) }}
+
+          needs.input-data1.outputs.steps:
+            ${{ needs.input-data1.outputs.steps }}
+
+          needs.input-data1.outputs.steps.input-data2.outputs.input-data3:
+            ${{ fromJSON(needs.input-data1.outputs.steps).input-data2.outputs.input-data3 }}
+
+          needs['input-data1'].outputs.steps['input-data2'].outputs['input-data3']:
+            ${{ fromJSON(needs['input-data1'].outputs.steps)['input-data2'].outputs['input-data3'] }}
+          ```
           EOF
 
   matrix-processing:
