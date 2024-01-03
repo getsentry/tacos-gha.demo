@@ -62,10 +62,11 @@ jobs:
           }}
 
     steps:
-      - run: |
-          : Processing...
-          echo ${{matrix.data}}
-          printf "x%s=%s" "$RANDOM" "$RANDOM" >> "$GITHUB_OUTPUT"
+      - id: processing
+        run: |
+          : Processing... ${{matrix.data}}
+          printf "x%s=%s" "$RANDOM" "$RANDOM" |
+            tee -a "$GITHUB_OUTPUT"
 
   show-ouputs:
     runs-on: ubuntu-latest
