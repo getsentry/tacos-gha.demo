@@ -12,7 +12,8 @@ jobs:
   input-data1:
     runs-on: ubuntu-latest
     outputs:
-      input-data4: ${{ toJSON(steps.input-data2.outputs) }}
+      steps: ${{ toJSON(steps) }}
+      input-data4: ${{ toJSON(steps.input-data2.outputs.input-data4) }}
     steps:
       - name: input-data2
         run: |
