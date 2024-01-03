@@ -9,21 +9,23 @@ defaults:
     shell: bash -euxo pipefail {0}
 
 jobs:
-  input-data:
+  input-data1:
     runs-on: ubuntu-latest
+    outputs:
+      input-data4: ${{ steps.input-data2.outputs.input-data3 }}
     steps:
-      - name: set-output
+      - name: input-data2
         run: |
-          printf "input-data=" >> "$GITHUB_OUTPUT"
+          printf "input-data3=" >> "$GITHUB_OUTPUT"
           seq 5 | jq -R | jq -cs >> "$GITHUB_OUTPUT"
 
   matrix-processing:
     runs-on: ubuntu-latest
     needs:
-      - input-data
+      - input-data1
     strategy:
       matrix:
-        data: ${{ fromJSON(needs.input-data.outputs) }}
+        data: ${{ fromJSON(needs.input-data1.outputs) }}
 
     steps:
       - run: |
