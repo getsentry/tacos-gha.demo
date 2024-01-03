@@ -17,7 +17,7 @@ jobs:
       - id: input-data2
         run: |
           printf "input-data3=" >> "$GITHUB_OUTPUT"
-          seq 5 | jq -R | jq -cs >> "$GITHUB_OUTPUT"
+          seq 20 | jq -R | jq -cs >> "$GITHUB_OUTPUT"
 
   show-inputs:
     runs-on: ubuntu-latest
@@ -83,7 +83,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: matrix-output.${{matrix.data}}
-          #name: lock_result_${{ steps.artifact_name.outputs.artifact_name }}
           path: matrix-output
 
   show-ouputs:
