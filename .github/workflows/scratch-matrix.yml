@@ -12,8 +12,8 @@ jobs:
   input-data1:
     runs-on: ubuntu-latest
     outputs:
+      #input-data4: ${{ steps.input-data2.outputs.input-data3 }}
       steps: ${{ toJSON(steps) }}
-      input-data4: ${{ steps.input-data2.outputs.input-data3 }}
     steps:
       - id: input-data2
         run: |
@@ -31,20 +31,11 @@ jobs:
           needs:
             ${{ toJSON(needs) }}
 
-          needs.input-data1:
-            ${{ toJSON(needs.input-data1) }}
-
-          needs['input-data1']:
-            ${{ toJSON(needs['input-data1']) }}
-
           needs.input-data1.outputs.steps:
             ${{ needs.input-data1.outputs.steps }}
 
           needs.input-data1.outputs.steps.input-data2.outputs.input-data3:
             ${{ fromJSON(needs.input-data1.outputs.steps).input-data2.outputs.input-data3 }}
-
-          needs['input-data1'].outputs.steps['input-data2'].outputs['input-data3']:
-            ${{ fromJSON(needs['input-data1'].outputs.steps)['input-data2'].outputs['input-data3'] }}
           ```
           EOF
 
