@@ -12,7 +12,6 @@ jobs:
   input-data1:
     runs-on: ubuntu-latest
     outputs:
-      #input-data4: ${{ steps.input-data2.outputs.input-data3 }}
       steps: ${{ toJSON(steps) }}
     steps:
       - id: input-data2
@@ -20,7 +19,7 @@ jobs:
           printf "input-data3=" >> "$GITHUB_OUTPUT"
           seq 5 | jq -R | jq -cs >> "$GITHUB_OUTPUT"
 
-  show-needs:
+  show-inputs:
     runs-on: ubuntu-latest
     needs:
       - input-data1
@@ -43,12 +42,31 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - input-data1
+    outputs:
+      steps: ${{ toJSON(steps) }}
     strategy:
       matrix:
-        data: ${{ needs }}
+        data: |
+          ${{ fromJSON(needs.input-data1.outputs.steps).input-data2.outputs.input-data3 }}
 
     steps:
       - run: |
           : Processing...
           echo ${{matrix.data}}
           printf "x%s=%s" "$RANDOM" "$RANDOM" >> "$GITHUB_OUTPUT"
+
+  show-ouputs:
+    runs-on: ubuntu-latest
+    needs:
+      - matrix-processing
+    steps:
+      - run: |
+          set +x; cat >>"$GITHUB_STEP_SUMMARY" <<'EOF'
+          ```
+          needs:
+            ${{ toJSON(needs) }}
+
+          needs.matrix-processing.outputs.steps:
+            ${{ needs.matrix-processing.outputs.steps }}
+          ```
+          EOF
