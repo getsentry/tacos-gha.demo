@@ -47,7 +47,19 @@ jobs:
     strategy:
       matrix:
         data: |
-          ${{ fromJSON(needs.input-data1.outputs.steps).input-data2.outputs.input-data3 }}
+          ${{
+            fromJSON(
+              fromJSON(
+                needs
+                .input-data1
+                .outputs
+                .steps
+              )
+              .input-data2
+              .outputs
+              .input-data3
+            )
+          }}
 
     steps:
       - run: |
