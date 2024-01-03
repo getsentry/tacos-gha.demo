@@ -65,15 +65,42 @@ jobs:
       - id: processing
         run: |
           : Processing... ${{matrix.data}}
-          printf "x%s=%s" "$RANDOM" "$RANDOM" |
-            tee -a "$GITHUB_OUTPUT"
+          output="$RANDOM"
+          tee \
+            <<< "matrix${{matrix.data}}=$output" \
+            -a "$GITHUB_OUTPUT" \
+            -a "$GITHUB_STEP_SUMMARY" \
+          ;
+
+          mkdir matrix-output
+          jq -c >matrix-output/${{matrix.data}}.json <<EOF
+            { "matrix": {
+              "${{matrix.data}}": "$output"
+            } }
+          EOF
+
+      - id: put-output
+        uses: actions/upload-artifact@v4
+        with:
+          name: matrix-output.${{matrix.data}}
+          #name: lock_result_${{ steps.artifact_name.outputs.artifact_name }}
+          path: matrix-output
 
   show-ouputs:
     runs-on: ubuntu-latest
     needs:
       - matrix-processing
     steps:
+      - id: get-output
+        name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: matrix-output.*
+          path: matrix-output
+
       - run: |
+          ls -laR matrix-output || true
+
           set +x; cat >>"$GITHUB_STEP_SUMMARY" <<'EOF'
           ```
           needs:
