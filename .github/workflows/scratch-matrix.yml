@@ -15,7 +15,7 @@ jobs:
       steps: ${{ toJSON(steps) }}
       input-data4: ${{ toJSON(steps.input-data2.outputs.input-data4) }}
     steps:
-      - name: input-data2
+      - id: input-data2
         run: |
           printf "input-data3=" >> "$GITHUB_OUTPUT"
           seq 5 | jq -R | jq -cs >> "$GITHUB_OUTPUT"
@@ -26,7 +26,7 @@ jobs:
       - input-data1
     steps:
       - run: |
-          set +x; cat <<'EOF'
+          set +x; cat >>"$GITHUB_STEP_SUMMARY" <<'EOF'
             ${{ toJSON(needs) }}
           EOF
 
