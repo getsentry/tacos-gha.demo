@@ -4,6 +4,10 @@
 set -euo pipefail
 exec 3>&1
 
+echo "DEBUG: Current working directory: $PWD" >&2
+echo "DEBUG: Current user: $(whoami)" >&2
+echo "DEBUG: File descriptors: $(ls -l /proc/fd)" >&2
+
 cat <<< '```console' >> "$GITHUB_STEP_SUMMARY"
 
 summary="$(
