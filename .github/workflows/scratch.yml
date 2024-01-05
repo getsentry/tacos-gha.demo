@@ -27,4 +27,7 @@ jobs:
             // console.log(this)
             // console.log(global)
             console.log(Object.getOwnPropertyNames(global))
+            const globals = Object.getOwnPropertyNames(global)
+            globals.sort()
+            console.log(globals.join("\n"))
             console.log(global.context)
