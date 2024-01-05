@@ -1,15 +1,24 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Run the wrapped command and use it as our step summary.
+# also, set a `summary` output
 set -euo pipefail
 
-cat <<< '```console' >> "$GITHUB_STEP_SUMMARY"
 ( set -x; "$@" ) |& tee >(
-  # I can't find a way to convince step summary to handle ansi colors the same
-  # way github logging does...
-  uncolor |
-    # make xtrace output match `console` syntax highlighting
-    sed -r 's/^\++ \$ /$ /' \
-    >> "$GITHUB_STEP_SUMMARY" \
-  ;
-)
-cat <<< '```' >> "$GITHUB_STEP_SUMMARY"
+    # I can't find a way to convince step summary to handle ansi colors the same
+    # way github logging does...
+    uncolor |
+      (
+        cat <<< '```console'
+        # make xtrace output match `console` syntax highlighting
+        sed -r 's/^\++ \$ /$ /'
+        cat <<< '```'
+      ) |
+      # send to summary as markdown, but also output as json
+      (
+        echo -n summary=
+        tee -a "$GITHUB_STEP_SUMMARY" |
+          jq -sR
+      ) \
+      >> "$GITHUB_OUTPUT" \
+    ;
+  )
