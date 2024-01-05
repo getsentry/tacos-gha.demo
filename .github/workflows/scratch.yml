@@ -24,7 +24,8 @@ jobs:
         with:
           script: |
             console.log(context)
-            console.log(needs)
+            console.log(this)
+            console.log(global)
             console.log(steps)
             github.rest.issues.createComment({
               issue_number: context.issue.number,
