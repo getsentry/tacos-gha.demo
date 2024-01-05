@@ -92,12 +92,13 @@ jobs:
           # FIXME: surface unexpected unlock failures
           result=""
           ./lib/terragrunt/slices |
-            xargs sudo-sac sh -c '
+            xargs ./lib/github/log-as-step-summary \
+              sudo-sac sh -c '
                 for slice in "$@"; do
                   ./lib/tf-lock/tf-lock-release "$slice" || : unlock failed
                 done
-              ' |
-              ./lib/github/log-as-step-summary \
+              ' \
+            \
           ;
 
   summary:
