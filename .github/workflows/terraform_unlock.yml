@@ -108,20 +108,23 @@ jobs:
     steps:
       - name: Comment on PR regarding lock state
         uses: actions/github-script@v7
+        env:
+          summary: ${{ needs.terraform_unlock.outputs.summary }}
         with:
           script: |
-            let summary = ${{ toJSON(needs.terraform_unlock.outputs.summary) }};
-            if ( summary ) {
-              summary = JSON.parse(JSON.parse(summary))
-            } else {
-              summary = "(error: no summary!)"
-            }
+            const summary = JSON.parse(process.env.summary)
+            const body = `\
+            Terraform lock state:
 
+            \`\`\`
+            ${summary}
+            \`\`\`\
+            `
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "Terraform lock state:\n\n\`\`\`\nxxx\n\`\`\`"
+              body: body,
             });
 
   reset_label:
