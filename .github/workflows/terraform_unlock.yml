@@ -95,8 +95,7 @@ jobs:
             xargs ./lib/github/log-as-step-summary \
               sudo-sac bash -c '
                 for slice in "$@"; do
-                  output=$(./lib/tf-lock/tf-lock-release "$slice")
-                  result="$result\n$output"
+                  ./lib/tf-lock/tf-lock-release "$slice"
                 done
               ' \
             \
