@@ -66,7 +66,7 @@ def tf_lock_release(root_module: Path, env: Environ):
     lock_info = get_lock_info(root_module)
     if not lock_info["lock"]:
         info(f"success: already unlocked: {root_module}")
-        return f"already unlocked: {root_module}"
+        return
 
     tf_user = f"{get_current_user(env)}@{get_current_host(env)}"
     lock_user = lock_info["Who"]
@@ -80,12 +80,15 @@ def tf_lock_release(root_module: Path, env: Environ):
         )
 
         info(f"success: released lock (from {lock_user}): {root_module}")
-        return f"released lock (from {lock_user}): {root_module}"
 
     else:
-        message = f"""refusing unlock: lock is held by {lock_user} (not {tf_user}) (hint: to override, set $USER and/or $HOST explicitly)"""
-        info(message)
-        return message
+        raise UserError(
+            f"""\
+refusing unlock: lock is held by {lock_user} (not {tf_user})
+(hint: to override, set $USER and/or $HOST explicitly)
+""",
+            code=3,
+        )
 
 
 @UserError.handler
@@ -100,12 +103,8 @@ def main():
 
     from os import environ
 
-    summaries = []
     for path in paths:
-        summary = tf_lock_release(path, env=environ.copy())
-        summaries.append(summary)
-
-    print("\n".join(summaries))
+        tf_lock_release(path, env=environ.copy())
 
 
 if __name__ == "__main__":
