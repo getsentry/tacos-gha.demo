@@ -4,6 +4,8 @@
 set -euo pipefail
 exec 3>&1
 
+echo "DEBUG: $(ls -la /dev/fd /dev/fd/)" >&2
+
 cat <<< '```console' >> "$GITHUB_STEP_SUMMARY"
 
 summary="$(
