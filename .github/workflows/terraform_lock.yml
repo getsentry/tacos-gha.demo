@@ -15,6 +15,7 @@ env:
   working_dir: "."
   deploy_environ: "dev"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GETSENTRY_SAC_VERB: apply
 
 jobs:
   determine-tf-root-modules:
@@ -101,7 +102,7 @@ jobs:
 
       - name: Obtain the lock
         id: lock
-        run: ./lib/ci/obtain-lock '${{matrix.tf-root-module}}' >> $GITHUB_OUTPUT
+        run: ./lib/ci/obtain-lock '${{matrix.tf-root-module}}'
 
       - name: Save lock result
         run: echo "${{ steps.lock_check.outputs.lock_obtained }}" > lock_result.txt
@@ -115,6 +116,7 @@ jobs:
         with:
           name: lock_result_${{ steps.artifact_name.outputs.artifact_name }}
           path: lock_result.txt
+
   comment_summary:
     needs: [terraform_lock]
     runs-on: ubuntu-latest
