@@ -23,11 +23,13 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            // console.log(context)
             // console.log(this)
             // console.log(global)
-            console.log(Object.getOwnPropertyNames(this))
+            console.log("Arguments:\n  ")
+            console.log(arguments)
             const globals = Object.getOwnPropertyNames(this)
             globals.sort()
-            console.log(globals.join("\n"))
-            console.log(global.context)
+            console.log("Globals:\n  ")
+            console.log(globals.join("\n  "))
+            console.log("---\n")
+            // console.log(global.context)
