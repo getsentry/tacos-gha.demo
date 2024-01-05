@@ -116,9 +116,7 @@ jobs:
             const body = `\
             Terraform lock state:
 
-            \`\`\`
             ${summary}
-            \`\`\`\
             `
             github.rest.issues.createComment({
               issue_number: context.issue.number,
