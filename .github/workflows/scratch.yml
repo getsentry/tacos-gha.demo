@@ -25,11 +25,19 @@ jobs:
           script: |
             // console.log(this)
             // console.log(global)
+
+            console.log("Environ:")
+            console.log(process.env)
+            console.log("---\n")
+
             console.log("Arguments:\n  ")
             console.log(arguments)
             const globals = Object.getOwnPropertyNames(this)
             globals.sort()
+            console.log("---\n")
+
             console.log("Globals:\n  ")
             console.log(globals.join("\n  "))
             console.log("---\n")
+
             // console.log(global.context)
