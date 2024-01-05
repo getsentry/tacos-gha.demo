@@ -1,46 +1,11 @@
 name: Scratch
 
 on:
-  workflow_call:
-    inputs:
-      working_dir:
-        default: "CALL:."
-        type: "string"
-
-      # NOTE: Please keep these in sync with ../../.terra*-version files.
-      tf_version:
-        default: "CALL:1.6.4"
-        type: "string"
-      tg_version:
-        default: "CALL:0.53.5"
-        type: "string"
-  workflow_dispatch:
-    inputs:
-      working_dir: { default: "DISPATCH:." }
-
-      # NOTE: Please keep these in sync with ../../.terra*-version files.
-      tf_version: { default: "DISPATCH:1.6.4" }
-      tg_version: { default: "DISPATCH:0.53.5" }
-
-  schedule:
-    - cron: "0 0 * * *"
-
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - labeled
-      - closed
+  pull_request: null
 
 defaults:
   run:
-    shell: env ./lib/ci/default-shell {0}
-
-env:
-  working_dir: "ENV:./terraform/env"
-  tf_version: "ENV:1.6.4"
-  tg_version: "ENV:0.53.5"
+    shell: bash -euxo pipefail {0}
 
 jobs:
   scratch:
@@ -49,18 +14,20 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
-      - name: show env (orig)
-        shell: bash
+      - id: summary
         run: |
-          sort -z /proc/self/environ |
-            tr '\0\n' '\n;' |
-            tee orig.env
+          echo summary='"oh\nhi"' >> "$GITHUB_OUTPUT"
 
-      - name: Scratch
-        uses: ./.github/actions/scratch
-      - name: basic info (main job)
-        run: |
-          echo "$USER@$HOSTNAME"
-          id
-          hostname -f
+      - name: Comment on PR regarding lock state
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log(context)
+            console.log(needs)
+            console.log(steps)
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "Terraform lock state:\n\n\`\`\`\n${{ fromJSON(steps.summary.outputs.summary) }}\n\`\`\`"
+            });
