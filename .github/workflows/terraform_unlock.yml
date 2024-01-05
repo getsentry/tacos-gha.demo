@@ -98,7 +98,6 @@ jobs:
                   output=$(./lib/tf-lock/tf-lock-release "$slice")
                   result="$result\n$output"
                 done
-                echo "summary=${result//$'\n'/\\n}" >> "$GITHUB_OUTPUT"
               ' \
             \
           ;
