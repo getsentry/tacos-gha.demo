@@ -10,10 +10,10 @@ defaults:
 
 env:
   # NOTE: please keep these in sync with ../../.terra*-version
-  tf_version: "1.6.4"
-  tg_version: "0.53.5"
-  working_dir: "."
-  deploy_environ: "dev"
+  tf_version: '1.6.4'
+  tg_version: '0.53.5'
+  working_dir: '.'
+  deploy_environ: 'dev'
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GETSENTRY_SAC_VERB: apply
 
@@ -92,17 +92,16 @@ jobs:
           # FIXME: surface unexpected unlock failures
           result=""
           ./lib/terragrunt/slices |
-            xargs ./lib/github/log-as-step-summary \
-              sudo-sac bash -c '
+            xargs sudo-sac sh -c '
                 for slice in "$@"; do
-                  ./lib/tf-lock/tf-lock-release "$slice"
+                  ./lib/tf-lock/tf-lock-release "$slice" || : unlock failed
                 done
-              ' \
-            \
+              ' |
+              ./lib/github/log-as-step-summary \
           ;
 
   summary:
-    name: "Summarize lock state."
+    name: 'Summarize lock state.'
     needs: [terraform_unlock]
     runs-on: ubuntu-latest
     steps:
