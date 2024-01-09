@@ -7,6 +7,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_lock.yml@main
+    uses: getsentry/tacos-gha/.github/workflows/tacos_lock.yml@iw/force-unlock-happy
     with:
-      tacos_gha_ref: refs/heads/main
+      tacos_gha_ref: refs/heads/iw/force-unlock-happy
