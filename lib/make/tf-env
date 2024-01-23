@@ -3,7 +3,7 @@ set -euo pipefail
 # make a personalized terraform tree, to avoid clashing of state / locking
 # during testing:
 
-export PATH="/bin:/usr/bin:/opt/homebrew/bin:$PWD/bin"
+export PATH="$PATH:/bin:/usr/bin:/opt/homebrew/bin:$PWD/bin:~/code/tacos-gha/bin:~/code/tacos-gha/lib/getsentry-sac:~/code/tacos-gha/lib/gcloud"
 
 src='terraform/env'
 dst="$src.$USER"
