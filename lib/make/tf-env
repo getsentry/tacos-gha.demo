@@ -18,7 +18,7 @@ git clean "$src" -fdxf
 cp -r "$src" "$dst"
 
 git add "$dst"
-sudo-sac terragrunt run-all init --terragrunt-include-dir="$dst/**/*"
+GETSENTRY_SAC_VERB=apply sudo-gcp terragrunt run-all init --terragrunt-include-dir="$dst/**/*"
 PAGER='' git diff "$dst"
 git add "$dst"
 
