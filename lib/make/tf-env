@@ -3,7 +3,12 @@ set -euo pipefail
 # make a personalized terraform tree, to avoid clashing of state / locking
 # during testing:
 
-export PATH="/bin:/usr/bin:/opt/homebrew/bin:$PWD/bin"
+HERE="$(dirname "$(readlink -f "$0")")"
+REPO_TOP="$(cd "$HERE/../.."; pwd)"
+# make a personalized terraform tree, to avoid clashing of state / locking
+# during testing:
+export TACOS_GHA_HOME="${TACOS_GHA_HOME:-"$REPO_TOP/../tacos-gha"}"
+export PATH="$PATH:/bin:/usr/bin:/opt/homebrew/bin:$REPO_TOP/bin:$TACOS_GHA_HOME/bin"
 
 src='terraform/env'
 dst="$src.$USER"
@@ -18,7 +23,7 @@ git clean "$src" -fdxf
 cp -r "$src" "$dst"
 
 git add "$dst"
-sudo-sac terragrunt run-all init --terragrunt-include-dir="$dst/**/*"
+GETSENTRY_SAC_VERB=apply sudo-gcp terragrunt run-all init --terragrunt-include-dir="$dst/**/*"
 PAGER='' git diff "$dst"
 git add "$dst"
 
