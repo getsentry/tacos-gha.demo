@@ -7,6 +7,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_detect_drift.yml@emarks/avoid-lock-on-draft
+    uses: getsentry/tacos-gha/.github/workflows/tacos_detect_drift.yml@bukzor/test-in-parallel
     with:
-      tacos_gha_ref: refs/heads/emarks/avoid-lock-on-draft
+      tacos_gha_ref: refs/heads/bukzor/test-in-parallel
