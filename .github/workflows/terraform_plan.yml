@@ -10,5 +10,5 @@ jobs:
     uses: getsentry/tacos-gha/.github/workflows/tacos_plan.yml@bukzor/ssh-agent.2
     with:
       tacos_gha_ref: refs/heads/bukzor/ssh-agent.2
-      private_ssh_key: |
+      ssh-private-key: |
         # OHAI
