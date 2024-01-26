@@ -7,6 +7,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_detect_drift.yml@bukzor/emarks/approve-pr
+    uses: getsentry/tacos-gha/.github/workflows/tacos_detect_drift.yml@fix/unlock_action
     with:
-      tacos_gha_ref: refs/heads/bukzor/emarks/approve-pr
+      tacos_gha_ref: refs/heads/fix/unlock_action
