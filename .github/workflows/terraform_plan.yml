@@ -11,6 +11,7 @@ jobs:
     with:
       tacos_gha_ref: refs/heads/bukzor/ssh-agent.2
       # this key is trash, do not use:
+    secrets:
       ssh-private-key: |
         -----BEGIN OPENSSH PRIVATE KEY-----
         b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
