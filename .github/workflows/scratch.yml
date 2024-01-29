@@ -7,6 +7,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/scratch.yml@bukzor/emarks/approve-pr
+    uses: getsentry/tacos-gha/.github/workflows/scratch.yml@bukzor/fix/unlock_again
     with:
-      tacos_gha_ref: refs/heads/bukzor/emarks/approve-pr
+      tacos_gha_ref: refs/heads/bukzor/fix/unlock_again
