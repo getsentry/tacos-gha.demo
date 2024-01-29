@@ -1,0 +1,5 @@
+resource "null_resource" "edit-me" {
+  triggers = {
+    now = "2024-01-29 22:15:38.072862+00:00"
+  }
+}
