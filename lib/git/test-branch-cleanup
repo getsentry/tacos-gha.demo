@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+cat <<EOF
+# this command only prints but does not execute the cleanup commands
+# to commit, pipe to shell:
+#     | sh
+EOF
+echo set -ex
+git branch -a |
+  ( grep '^  remotes/[^/]*/test' || echo : no test branches found ) |
+  sed -r 's@^  remotes/([^/]*)/(test/)@git push \1 -d \2@' \
+;
+
+echo : DONE
