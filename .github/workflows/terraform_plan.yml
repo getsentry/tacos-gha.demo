@@ -3,7 +3,12 @@ name: Terraform Plan
 on:
   workflow_dispatch: null
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types:
+      - labeled
+      - opened
+      - ready_for_review
+      - reopened
+      - synchronize
 
 jobs:
   tacos-gha:

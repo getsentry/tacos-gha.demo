@@ -3,7 +3,8 @@ name: Scratch
 on:
   workflow_dispatch: null
   pull_request:
-    types: [synchronize]
+    types:
+      - labeled
 
 jobs:
   tacos-gha:
