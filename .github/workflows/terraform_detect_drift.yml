@@ -7,6 +7,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_detect_drift.yml@bukzor/ssh-agent
+    uses: getsentry/tacos-gha/.github/workflows/tacos_detect_drift.yml@bukzor/spring-cleaning
     with:
-      tacos_gha_ref: refs/heads/bukzor/ssh-agent
+      tacos_gha_ref: refs/heads/bukzor/spring-cleaning
