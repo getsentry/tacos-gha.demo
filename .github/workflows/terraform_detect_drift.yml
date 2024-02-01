@@ -7,6 +7,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_detect_drift.yml@bukzor/parallel-testing-fix
+    uses: getsentry/tacos-gha/.github/workflows/tacos_detect_drift.yml@emarks/reliable-unlock
     with:
-      tacos_gha_ref: refs/heads/bukzor/parallel-testing-fix
+      tacos_gha_ref: refs/heads/emarks/reliable-unlock
