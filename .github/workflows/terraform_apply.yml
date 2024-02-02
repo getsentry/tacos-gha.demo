@@ -8,6 +8,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_apply.yml@bukzor/parallel-testing-fix
+    uses: getsentry/tacos-gha/.github/workflows/tacos_apply.yml@bukzor/tf-summary-readability
     with:
-      tacos_gha_ref: refs/heads/bukzor/parallel-testing-fix
+      tacos_gha_ref: refs/heads/bukzor/tf-summary-readability
