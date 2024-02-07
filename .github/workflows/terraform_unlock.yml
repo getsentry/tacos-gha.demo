@@ -10,6 +10,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_unlock.yml@bukzor/testing123
+    uses: getsentry/tacos-gha/.github/workflows/tacos_unlock.yml@bukzor/lock-with-state-admin
     with:
-      tacos_gha_ref: refs/heads/bukzor/testing123
+      tacos_gha_ref: refs/heads/bukzor/lock-with-state-admin
