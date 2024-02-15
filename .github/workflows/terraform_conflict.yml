@@ -14,6 +14,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_conflict.yml@bukzor/our-own-pr-tags
+    uses: getsentry/tacos-gha/.github/workflows/tacos_conflict.yml@main
     with:
-      tacos_gha_ref: refs/heads/bukzor/our-own-pr-tags
+      tacos_gha_ref: refs/heads/main
