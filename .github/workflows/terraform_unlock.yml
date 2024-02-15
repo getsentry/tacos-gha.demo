@@ -10,6 +10,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_unlock.yml@main
+    uses: getsentry/tacos-gha/.github/workflows/tacos_unlock.yml@emarks/fix-conflict-comparison
     with:
-      tacos_gha_ref: refs/heads/main
+      tacos_gha_ref: refs/heads/emarks/fix-conflict-comparison
