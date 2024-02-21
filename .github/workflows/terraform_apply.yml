@@ -8,6 +8,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_apply.yml@bukzor/conflict-detection
+    uses: getsentry/tacos-gha/.github/workflows/tacos_apply.yml@bukzor/matrix-again
     with:
-      tacos_gha_ref: refs/heads/bukzor/conflict-detection
+      tacos_gha_ref: refs/heads/bukzor/matrix-again
