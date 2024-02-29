@@ -8,6 +8,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/scratch.yml@lock-conflict-message
+    uses: getsentry/tacos-gha/.github/workflows/scratch.yml@main
     with:
-      tacos_gha_ref: refs/heads/lock-conflict-message
+      tacos_gha_ref: refs/heads/main
