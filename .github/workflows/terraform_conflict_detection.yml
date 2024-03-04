@@ -14,6 +14,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_conflict_detection.yml@lock-conflict-message
+    uses: getsentry/tacos-gha/.github/workflows/tacos_conflict_detection.yml@bukzor/plan-fan-in-summary
     with:
-      tacos_gha_ref: refs/heads/lock-conflict-message
+      tacos_gha_ref: refs/heads/bukzor/plan-fan-in-summary
