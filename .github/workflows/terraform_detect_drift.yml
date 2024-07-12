@@ -7,6 +7,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_detect_drift.yml@bukzor/plan-fan-in-summary
+    uses: getsentry/tacos-gha/.github/workflows/tacos_detect_drift.yml@main
     with:
-      tacos_gha_ref: refs/heads/bukzor/plan-fan-in-summary
+      tacos_gha_ref: refs/heads/main
