@@ -5,6 +5,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/required_check.yml@add-required-check-workflow
+    uses: getsentry/tacos-gha/.github/workflows/required_check.yml@required-checks
     with:
-      tacos_gha_ref: refs/heads/add-required-check-workflow
+      tacos_gha_ref: refs/heads/required-checks
