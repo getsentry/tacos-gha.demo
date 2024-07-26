@@ -7,3 +7,9 @@ resource "null_resource" "project" {
     project = var.project
   }
 }
+
+resource "null_resource" "project2" {
+  triggers = {
+    project = var.project
+  }
+}
