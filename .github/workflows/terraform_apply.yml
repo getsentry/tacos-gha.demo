@@ -8,6 +8,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_apply.yml@main
+    uses: getsentry/tacos-gha/.github/workflows/tacos_apply.yml@maxwelllwang/test-for-unlock-bug
     with:
-      tacos_gha_ref: refs/heads/main
+      tacos_gha_ref: refs/heads/maxwelllwang/test-for-unlock-bug
