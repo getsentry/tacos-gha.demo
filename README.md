@@ -28,11 +28,47 @@ git commit -am "feat: onboarding dev $USER"
 
 ## Usage
 
+### Environment
+
+To approximate the environment created by the tacos-gha system:
+
+```
+cd $tacos-gha
+unset DIRENV_DIFF && cd -  # cd without reverting .envrc
+direnv allow
+```
+
+### Plan & Apply
+
 To do the common plan / review / apply cycle:
 
 ```
-sudo-sac terragrunt run-all plan -out plan
-sudo-sac terragrunt run-all apply plan
+cd terraform/env.$USER
+sudo-gcp terragrunt-noninteractive run-all plan -out plan
+GETSENTRY_SAC_VERB=apply sudo-gcp terragrunt-noninteractive run-all apply plan
+```
+
+### Unlock All
+
+Maybe this should be its own command ...
+
+```
+$TACOS_GHA_HOME/lib/tacos/locks |
+  jq -r \
+    ' select(.lock)
+    | .slice as $slice
+    | ( .Who
+      | split("@")
+      | [ "env"
+        , "USER=\(.[0])"
+        , "HOST=\(.[1])"
+        , "tf-lock-release"
+        , $slice
+        ]
+      | @sh
+      )
+    ' |
+    GETSENTRY_SAC_VERB=apply sudo-gcp sh -ex
 ```
 
 [install homebrew]: https://brew.sh/
