@@ -12,6 +12,6 @@ on:
 
 jobs:
   tacos-gha:
-    uses: getsentry/tacos-gha/.github/workflows/tacos_plan.yml@fix/unlock-bug
+    uses: getsentry/tacos-gha/.github/workflows/tacos_plan.yml@emarks/anyone-can-apply-with-approval
     with:
-      tacos_gha_ref: refs/heads/fix/unlock-bug
+      tacos_gha_ref: refs/heads/emarks/anyone-can-apply-with-approval
