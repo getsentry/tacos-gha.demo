@@ -1,0 +1,8 @@
+#!/bin/bash
+# delete orphaned test branches
+set -euxo pipefail
+git branch -r |
+  (grep origin/test || : grep found nothing) |
+  sed 's@origin/@@' |
+  xargs -tr git push origin -d \
+;
