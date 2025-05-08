@@ -2,6 +2,6 @@
 terraform {
   backend "gcs" {
     bucket   = "sac-dev-tf--tacos-gha"
-    prefix   = "tacos-demo/env.fpacifici/dev/slice-2-vm"
+    prefix   = "tacos-demo/env.filippopacifici/prod/slice-0-project"
   }
 }
